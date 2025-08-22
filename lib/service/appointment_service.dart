@@ -19,12 +19,13 @@ class AppointmentService {
   late final StreamController<List<UniAppointment>>
   _appointmentStreamController;
 
-  Future<void> createAppointment({
+  Future<UniAppointment> createAppointment({
     required DateTime start,
     required DateTime end,
     required String uniAppointmentSubject,
     required int roomNum,
     required UniAppointmentTypes type,
+    required String recurrence
   }) async {
     final newAppointment = UniAppointment(
       start: start,
@@ -32,9 +33,12 @@ class AppointmentService {
       uniAppointmentSubject: uniAppointmentSubject,
       roomNum: roomNum,
       type: type,
+      recurrence: recurrence
     );
     _appointments.add(newAppointment);
+    return newAppointment;
   }
 
-  Stream<List<UniAppointment>> get allAppointments => _appointmentStreamController.stream.map((appointment) => appointment);
+  Stream<List<UniAppointment>> get allAppointments =>
+      _appointmentStreamController.stream.map((appointment) => appointment);
 }

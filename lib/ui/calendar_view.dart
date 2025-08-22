@@ -106,19 +106,12 @@ class _CalendarState extends State<Calendar> {
                   initialSelectedDate: DateTime.now(),
                   allowViewNavigation: true,
                   viewNavigationMode: ViewNavigationMode.snap,
-                  // allowedViews: [
-                  //   CalendarView.day,
-                  //   CalendarView.week,
-                  //   CalendarView.month,
-                  //   CalendarView.schedule,
-                  // ],
                   view: _calendarView,
                   monthViewSettings: MonthViewSettings(
                     appointmentDisplayMode:
                         MonthAppointmentDisplayMode.appointment,
                   ),
                   dataSource: AppointementDataSource(_appointments),
-
                   showNavigationArrow: false,
                   timeSlotViewSettings: TimeSlotViewSettings(
                     startHour: 7,
@@ -139,33 +132,28 @@ class _CalendarState extends State<Calendar> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // showDialog(
-          //   context: context,
-          //   builder: (BuildContext context) {
-          //     return Center(
-          //       child: AlertDialog(
-          //         title: Text("Add appointment",textAlign: TextAlign.center,),
-          //         content: Column(
-          //           children: [
-          //             TextFormField(autocorrect: false,decoration: InputDecoration(label: Text("Subject") ),),
-          //             DropdownButtonFormField(items: DropdownMenuItem<<UniAppointmentTypes>> , onChanged: onChanged)
-          //           ]),
-          //       ),
-          //     );
-          //   },
-          // );
-          showDialog(
+        onPressed: () async {
+          final newAppointment = await showModalBottomSheet<UniAppointment>(
             context: context,
+            showDragHandle: true,
+            isScrollControlled: true,
+            isDismissible: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            constraints: BoxConstraints(),
             builder: (BuildContext context) {
-              return AddUniAppointmentDialog();
+              return SingleChildScrollView(child: AddUniAppointmentDialog());
             },
           );
-          setState(() {
-            _myDataSource.notifyListeners(CalendarDataSourceAction.reset, [
-              _appointments.last,
-            ]);
-          });
+
+          if (newAppointment != null) {
+            setState(() {
+              _myDataSource.notifyListeners(CalendarDataSourceAction.add, [
+                _appointments.last,
+              ]);
+            });
+          }
         },
         child: const Icon(Icons.add),
       ),

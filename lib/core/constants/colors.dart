@@ -10,5 +10,6 @@ enum TDColor { orange }
 Map<UniAppointmentTypes, Color> appointementColor = {
   UniAppointmentTypes.course: Colors.blue,
   UniAppointmentTypes.td : Colors.deepOrangeAccent,
-  UniAppointmentTypes.tp : Colors.green
+  UniAppointmentTypes.tp : Colors.green,
+  UniAppointmentTypes.specialEvent : Colors.purpleAccent
 };
