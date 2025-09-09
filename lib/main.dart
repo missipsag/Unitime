@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:unitime/ui/calendar_view.dart';
-import 'package:unitime/ui/gpt_calendar.dart';
+import 'package:unitime/ui/feed_view.dart';
+import 'package:unitime/ui/profile_view.dart';
+import 'package:unitime/ui/updates_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'UniTime',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
-      home: Calendar(),
+      home: MyHomePage(title: "UniTime"),
     );
   }
 }
@@ -30,12 +32,66 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int _currentIndex = 0;
+  final _pages = const [FeedView(), Calendar(), UpdatesView(), ProfileView()];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+      body: _pages[_currentIndex],
+      bottomNavigationBar: _bottomNavBar(context),
+    );
+  }
+
+  Container _bottomNavBar(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadiusGeometry.all(Radius.circular(15)),
+        color: Theme.of(context).primaryColor,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _currentIndex = 0;
+              });
+            },
+            icon: _currentIndex == 0
+                ? Icon(Icons.home_filled)
+                : Icon(Icons.home_outlined),
+          ),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _currentIndex = 1;
+              });
+            },
+            icon: _currentIndex == 1
+                ? Icon(Icons.watch_later_rounded)
+                : Icon(Icons.watch_later_outlined),
+          ),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _currentIndex = 2;
+              });
+            },
+            icon: _currentIndex == 2
+                ? Icon(Icons.notifications)
+                : Icon(Icons.notifications_none),
+          ),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _currentIndex = 3;
+              });
+            },
+            icon: _currentIndex == 3
+                ? Icon(Icons.person)
+                : Icon(Icons.person_outline_outlined),
+          ),
+        ],
       ),
     );
   }

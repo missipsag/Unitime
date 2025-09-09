@@ -22,7 +22,7 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
   TimeOfDay? _selectedEndTime = TimeOfDay.now();
   DateFormat dateFormat = DateFormat("EEE, dd MMM yyyy");
   DateFormat hourFormat = DateFormat("HH:mm");
-  int? roomNbr;
+  String? location;
 
   static final Map<String, UniAppointmentTypes> stringToUniApp = {
     'TD': UniAppointmentTypes.td,
@@ -30,7 +30,7 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
     'Cours': UniAppointmentTypes.course,
     'Evènement spécial': UniAppointmentTypes.specialEvent,
   };
-  static final List<String> _recurrence = ["Once", "Daily", "Weekly"];
+  static final List<String> _recurrence = ["Daily", "Once", "Weekly"];
   String? _chosedRec;
   static final Map<String, String> _appointmentRecurrence = {
     "Once": "",
@@ -60,10 +60,10 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
 
   List<String> _selectedDays = [];
 
-  List<int> generateRoomNbrs(int len) {
-    List<int> possibleRoomNbrs = <int>[];
+  List<String> generateRoomNbrs(int len) {
+    List<String> possibleRoomNbrs = <String>[];
     for (var i = 1; i <= len; i++) {
-      possibleRoomNbrs.add(i);
+      possibleRoomNbrs.add(i.toString());
     }
     return possibleRoomNbrs;
   }
@@ -105,7 +105,7 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purpleAccent,
-                  textStyle: TextStyle(color: Colors.white),
+                  textStyle: const TextStyle(color: Colors.white),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12), // adjust radius
                   ),
@@ -181,7 +181,7 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
                             _selectedEndTime!.minute,
                           ),
                           uniAppointmentSubject: _subjectController.text,
-                          roomNum: roomNbr!,
+                          location: location!,
                           type: _selectedType!,
                           recurrence: rec!,
                         );
@@ -230,75 +230,39 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
 
               child: TextFormField(
-                decoration: InputDecoration(
+                decoration:  const InputDecoration(
                   border: OutlineInputBorder(),
-                  label: Text("Subject"),
+                  label:  Text("Subject"),
                   hintText: "Enter a subject",
-                  prefixIcon: Icon(Icons.menu_book_sharp),
+                  prefixIcon:  Icon(Icons.menu_book_sharp),
                 ),
                 controller: _subjectController,
                 validator: (value) {
                   if (value!.isNotEmpty) {
                     return null;
-                  } else
+                  } else {
                     return "Please enter a value";
+                  }
                 },
               ),
             ),
 
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
+              spacing: 25,
               children: [
                 Flexible(
-                  flex: 2,
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 220),
-                    child: InputDecorator(
-                      decoration: InputDecoration(
-                        label: Text("From"),
+                    constraints: const BoxConstraints(maxWidth: 160),
+                    child:  InputDecorator(
+                      decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.zero,
-                        prefixIcon: Icon(Icons.edit_calendar_sharp),
-                        isDense: true,
-                      ),
-
-                      child: TextButton(
-                        onPressed: () async {
-                          _selectedStartDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(
-                              const Duration(days: 365),
-                            ),
-                          );
-                          _selectedStartDate =
-                              _selectedStartDate ?? DateTime.now();
-                          setState(() {
-                            _selectedStartDate;
-                          });
-                        },
-
-                        child: Text(
-                          " ${dateFormat.format(_selectedStartDate!)}",
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12),
-                Flexible(
-                  flex: 1,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 130),
-                    child: InputDecorator(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        label: Text("At"),
+                        label: Text("Starts at"),
                         contentPadding: EdgeInsets.zero,
                         isDense: true,
 
-                        prefixIcon: Icon(Icons.watch_later_outlined),
+                        prefixIcon:  Icon(Icons.watch_later_outlined),
                       ),
 
                       child: TextButton(
@@ -321,54 +285,14 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
                     ),
                   ),
                 ),
-              ],
-            ),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-
-              children: [
                 Flexible(
-                  flex: 2,
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 220),
-                    child: InputDecorator(
-                      decoration: InputDecoration(
-                        label: Text("To"),
+                    constraints:const  BoxConstraints(maxWidth: 160),
+                    child:  InputDecorator(
+                      decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.zero,
-                        prefixIcon: Icon(Icons.edit_calendar_sharp),
-                        isDense: true,
-                      ),
-                      child: TextButton(
-                        onPressed: () async {
-                          _selectedEndDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(
-                              const Duration(days: 365),
-                            ),
-                          );
-                          _selectedEndDate = _selectedEndDate ?? DateTime.now();
-                          setState(() {
-                            _selectedEndDate;
-                          });
-                        },
-                        child: Text(" ${dateFormat.format(_selectedEndDate!)}"),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12),
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 130),
-                  child: Flexible(
-                    flex: 1,
-                    child: InputDecorator(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        label: Text("At"),
+                        label: Text("Ends at"),
                         contentPadding: EdgeInsets.zero,
                         isDense: true,
 
@@ -402,22 +326,22 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
 
               child: DropdownButtonFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  label: Text("Room Number"),
+                  label: Text("Location"),
                   prefixIcon: Icon(Icons.room_sharp),
                 ),
-                value: roomNbr,
+                initialValue: location,
                 items: generateRoomNbrs(30).map((roomNbr) {
-                  return DropdownMenuItem<int>(
+                  return DropdownMenuItem<String>(
                     value: roomNbr,
-                    child: Text(roomNbr.toString()),
+                    child: Text(roomNbr),
                   );
                 }).toList(),
                 onChanged: (nbr) {
-                  roomNbr = nbr ?? 1;
+                  location = nbr ?? '1';
                   setState(() {
-                    roomNbr;
+                    location;
                   });
                 },
                 validator: (roomNbr) {
@@ -435,7 +359,7 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
 
               child: InputDecorator(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   label: Text('Recurrence'),
                 ),
@@ -466,7 +390,7 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
 
                 child: InputDecorator(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     label: Text('Days of Week'),
                   ),
@@ -492,7 +416,92 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
                   ),
                 ),
               ),
-            SizedBox(height: 40),
+            if (_chosedRec == "Once")
+              Container(
+                alignment: Alignment.center,
+                margin: const EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Column(
+                  spacing: 15,
+                  mainAxisSize: MainAxisSize.min,
+
+                  children: [
+                    Flexible(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: double.infinity,
+                        ),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            label: Text("From"),
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.zero,
+                            prefixIcon: Icon(Icons.edit_calendar_sharp),
+                            isDense: true,
+                          ),
+
+                          child: TextButton(
+                            onPressed: () async {
+                              _selectedStartDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime.now().add(
+                                  const Duration(days: 365),
+                                ),
+                              );
+                              _selectedStartDate =
+                                  _selectedStartDate ?? DateTime.now();
+                              setState(() {
+                                _selectedStartDate;
+                              });
+                            },
+
+                            child: Text(
+                              " ${dateFormat.format(_selectedStartDate!)}",
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: double.infinity),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            label: Text("To"),
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.zero,
+                            prefixIcon: Icon(Icons.edit_calendar_sharp),
+                            isDense: true,
+                          ),
+                          child: TextButton(
+                            onPressed: () async {
+                              _selectedEndDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime.now().add(
+                                  const Duration(days: 365),
+                                ),
+                              );
+                              _selectedEndDate =
+                                  _selectedEndDate ?? DateTime.now();
+                              setState(() {
+                                _selectedEndDate;
+                              });
+                            },
+                            child: Text(
+                              " ${dateFormat.format(_selectedEndDate!)}",
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 40),
           ],
         ),
       ),

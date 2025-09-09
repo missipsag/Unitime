@@ -37,6 +37,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
   intl: ^0.20.2
   syncfusion_flutter_calendar: ^30.2.4
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:

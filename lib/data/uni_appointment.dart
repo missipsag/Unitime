@@ -7,7 +7,7 @@ class UniAppointment extends Appointment {
   final DateTime start;
   final DateTime end;
   final String uniAppointmentSubject;
-  final int roomNum;
+  final String uniappointmentLocation;
   final UniAppointmentTypes type;
   final String recurrence;
 
@@ -15,7 +15,7 @@ class UniAppointment extends Appointment {
     required this.start,
     required this.end,
     required this.uniAppointmentSubject,
-    required this.roomNum,
+    required this.uniappointmentLocation,
     required this.type,
     required this.recurrence
   }) : super(
@@ -23,6 +23,7 @@ class UniAppointment extends Appointment {
          endTime: end,
          subject: uniAppointmentSubject,
          color: appointementColor[type] as Color,
-         recurrenceRule: recurrence
+         recurrenceRule: recurrence,
+         location: uniappointmentLocation
        );
 }

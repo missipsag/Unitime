@@ -44,10 +44,10 @@ class _MainUiState extends State<MainUi> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueGrey,
                   foregroundColor: Colors.white,
-                  shape: BeveledRectangleBorder(),
+                  shape: const BeveledRectangleBorder(),
                   elevation: 4.0,
                 ),
-                child: const Text("Create a groupe"),
+                child: const Text("Create a group"),
               ),
             ],
           ),
