@@ -1,0 +1,1 @@
+enum UniAppointmentScope { PROMOTION, GROUP }

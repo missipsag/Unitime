@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:unitime/repository/uni_appointment_repository.dart';
 import 'package:unitime/ui/calendar_view.dart';
 import 'package:unitime/ui/feed_view.dart';
 import 'package:unitime/ui/profile_view.dart';
 import 'package:unitime/ui/updates_view.dart';
+import 'package:unitime/viewmodels/calendar_view_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,11 +35,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
-  final _pages = const [FeedView(), Calendar(), UpdatesView(), ProfileView()];
+  final _pages = const [
+    FeedView(),
+    //CalendarView(),
+    UpdatesView(),
+    ProfileView(),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    CalendarViewModel viewModel = CalendarViewModel(
+      uniAppointmentRepository: UniAppointmentRepository(),
+    );
     return Scaffold(
-      body: _pages[_currentIndex],
+      body: CalendarView(viewModel: viewModel),
       bottomNavigationBar: _bottomNavBar(context),
     );
   }

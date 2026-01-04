@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:unitime/core/constants/uni_appointment_types.dart';
-import 'package:unitime/service/appointment_service.dart';
+import 'package:unitime/core/constants/uni_appointment_type.dart';
+import 'package:unitime/service/uni_appointment_service.dart';
 
 class AddUniAppointmentDialog extends StatefulWidget {
   const AddUniAppointmentDialog({super.key});
@@ -14,7 +14,7 @@ class AddUniAppointmentDialog extends StatefulWidget {
 class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
   final List<String> _types = ['TD', 'TP', 'Cours', 'Evènement spécial'];
   String? _type;
-  UniAppointmentTypes? _selectedType;
+  UniAppointmentType? _selectedType;
   final _formKey = GlobalKey<FormState>();
   DateTime? _selectedStartDate = DateTime.now();
   DateTime? _selectedEndDate = DateTime.now();
@@ -24,11 +24,11 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
   DateFormat hourFormat = DateFormat("HH:mm");
   String? location;
 
-  static final Map<String, UniAppointmentTypes> stringToUniApp = {
-    'TD': UniAppointmentTypes.td,
-    'TP': UniAppointmentTypes.tp,
-    'Cours': UniAppointmentTypes.course,
-    'Evènement spécial': UniAppointmentTypes.specialEvent,
+  static final Map<String, UniAppointmentType> stringToUniApp = {
+    'TD': UniAppointmentType.TD,
+    'TP': UniAppointmentType.TP,
+    'Cours': UniAppointmentType.COURSE,
+    'Evènement spécial': UniAppointmentType.SPECIAL_EVENT,
   };
   static final List<String> _recurrence = ["Daily", "Once", "Weekly"];
   String? _chosedRec;
@@ -69,12 +69,12 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
   }
 
   late final TextEditingController _subjectController;
-  late final AppointmentService _appointmentService;
+  late final UniAppointmentService _appointmentService;
 
   @override
   void initState() {
     _subjectController = TextEditingController();
-    _appointmentService = AppointmentService();
+    _appointmentService = UniAppointmentService();
     super.initState();
   }
 
@@ -164,29 +164,29 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
                         break;
                     }
 
-                    final newAppointment = await _appointmentService
-                        .createAppointment(
-                          start: DateTime(
-                            _selectedStartDate!.year,
-                            _selectedStartDate!.month,
-                            _selectedStartDate!.day,
-                            _selectedStartTime!.hour,
-                            _selectedStartTime!.minute,
-                          ),
-                          end: DateTime(
-                            _selectedEndDate!.year,
-                            _selectedEndDate!.month,
-                            _selectedEndDate!.day,
-                            _selectedEndTime!.hour,
-                            _selectedEndTime!.minute,
-                          ),
-                          uniAppointmentSubject: _subjectController.text,
-                          location: location!,
-                          type: _selectedType!,
-                          recurrence: rec!,
-                        );
+                    //final newAppointment = await _appointmentService
+                    // .createAppointment(
+                    //   start: DateTime(
+                    //     _selectedStartDate!.year,
+                    //     _selectedStartDate!.month,
+                    //     _selectedStartDate!.day,
+                    //     _selectedStartTime!.hour,
+                    //     _selectedStartTime!.minute,
+                    //   ),
+                    //   end: DateTime(
+                    //     _selectedEndDate!.year,
+                    //     _selectedEndDate!.month,
+                    //     _selectedEndDate!.day,
+                    //     _selectedEndTime!.hour,
+                    //     _selectedEndTime!.minute,
+                    //   ),
+                    //   uniAppointmentSubject: _subjectController.text,
+                    //   location: location!,
+                    //   type: _selectedType!,
+                    //   recurrence: rec!,
+                    // );
 
-                    Navigator.of(context).pop(newAppointment);
+                    // Navigator.of(context).pop(newAppointment);
                   }
                 },
                 child: const Text("Add"),
@@ -230,11 +230,11 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
 
               child: TextFormField(
-                decoration:  const InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  label:  Text("Subject"),
+                  label: Text("Subject"),
                   hintText: "Enter a subject",
-                  prefixIcon:  Icon(Icons.menu_book_sharp),
+                  prefixIcon: Icon(Icons.menu_book_sharp),
                 ),
                 controller: _subjectController,
                 validator: (value) {
@@ -255,14 +255,14 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
                 Flexible(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 160),
-                    child:  InputDecorator(
+                    child: InputDecorator(
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         label: Text("Starts at"),
                         contentPadding: EdgeInsets.zero,
                         isDense: true,
 
-                        prefixIcon:  Icon(Icons.watch_later_outlined),
+                        prefixIcon: Icon(Icons.watch_later_outlined),
                       ),
 
                       child: TextButton(
@@ -288,8 +288,8 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
 
                 Flexible(
                   child: ConstrainedBox(
-                    constraints:const  BoxConstraints(maxWidth: 160),
-                    child:  InputDecorator(
+                    constraints: const BoxConstraints(maxWidth: 160),
+                    child: InputDecorator(
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         label: Text("Ends at"),
