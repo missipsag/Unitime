@@ -2,12 +2,13 @@ import 'dart:ffi';
 
 import 'package:flutter/widgets.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:unitime/core/constants/uni_appointment_type.dart';
 import 'package:unitime/core/constants/colors.dart';
+import 'package:unitime/core/constants/uni_appointment_type.dart';
 
 import '../core/constants/uni_appointment_scope.dart';
 
 class UniAppointment extends Appointment {
+  final Long id;
   final DateTime start;
   final DateTime end;
   final String title;
@@ -17,6 +18,7 @@ class UniAppointment extends Appointment {
   final String recurrence;
 
   UniAppointment({
+    required this.id,
     required this.start,
     required this.end,
     required this.title,
@@ -34,28 +36,28 @@ class UniAppointment extends Appointment {
        );
 
   factory UniAppointment.fromJson(Map<String, dynamic> json) {
-    // return switch (json) {
-    //   {
-    //   'id': Long id,
-    //   'title': String title,
-    //   'startTime': DateTime start,
-    //   'endTime': DateTime end,
-    //   'location': String location,
-    //   'appointmentType': UniAppointmentType uniAppointmentType,
-    //   'appointmentScope': UniAppointmentScope uniAppointmentScope,
-    //   'recurrenceRule': String recurrence,
-    //
-    //   } =>
-    return UniAppointment(
-      title: json['id'],
-      start: json['start'],
-      end: json['end'],
-      appointmentLocation: json['location'],
-      uniAppointmentType: json['uniAppointmentType'],
-      uniAppointmentScope: json['uniAppointmentType'],
-      recurrence: json['uniAppointmentType'],
-    );
-    // _ => throw const FormatException("Failed to load appointment."),
-    // };
+    return switch (json) {
+      {
+        'id': Long id,
+        'title': String title,
+        'startTime': DateTime start,
+        'endTime': DateTime end,
+        'location': String location,
+        'appointmentType': UniAppointmentType uniAppointmentType,
+        'appointmentScope': UniAppointmentScope uniAppointmentScope,
+        'recurrenceRule': String recurrence,
+      } =>
+        UniAppointment(
+          id: id,
+          title: title,
+          start: start,
+          end: end,
+          appointmentLocation: location,
+          uniAppointmentType: uniAppointmentType,
+          uniAppointmentScope: uniAppointmentScope,
+          recurrence: recurrence,
+        ),
+      _ => throw const FormatException("Failed to load appointment."),
+    };
   }
 }
