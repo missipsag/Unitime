@@ -16,11 +16,20 @@ class Promotion {
   });
 
   factory Promotion.fromJson(Map<String, dynamic> json) {
-    return Promotion(
-      id: json['id'],
-      name: json['name'],
-      field: json['field'],
-      promotionLevel: json['promotionLevel'],
-    );
+    return switch (json) {
+      {
+        'id': Long id,
+        'name': String name,
+        'field': String field,
+        'promotionLevel': PromotionLevel promotionLevel,
+      } =>
+        Promotion(
+          id: id,
+          name: name,
+          field: field,
+          promotionLevel: promotionLevel,
+        ),
+      _ => throw const FormatException("Failed to load promotion"),
+    };
   }
 }
