@@ -18,13 +18,24 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      email: json['email'],
-      firstName: json['firstName'],
-      lastName: json['lastName'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-    );
+    return switch (json) {
+      {
+        'id': Long id,
+        'email': String email,
+        'firstName': String firstName,
+        'lastName': String lastName,
+        'createdAt': DateTime createdAt,
+        'updatedAt': DateTime updatedAt,
+      } =>
+        User(
+          id: id,
+          email: email,
+          firstName: firstName,
+          lastName: lastName,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
+        ),
+      _ => throw const FormatException("Failed to load user."),
+    };
   }
 }
