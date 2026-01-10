@@ -3,7 +3,7 @@ import 'dart:ffi';
 import 'package:unitime/core/constants/promotion_level.dart';
 
 class Promotion {
-  final Long id;
+  final int id;
   final String name;
   final String field;
   final PromotionLevel promotionLevel;
@@ -18,7 +18,7 @@ class Promotion {
   factory Promotion.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-        'id': Long id,
+        'id': int id,
         'name': String name,
         'field': String field,
         'promotionLevel': PromotionLevel promotionLevel,

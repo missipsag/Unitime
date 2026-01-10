@@ -42,13 +42,13 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
     String byday = "";
 
     for (var i = 0; i < days.length; i++) {
-      byday = byday + days[i]!.toUpperCase().substring(0, 2) + ',';
+      byday = '$byday${days[i].toUpperCase().substring(0, 2)},';
     }
     byday = byday.substring(0, byday.length - 1);
     return byday;
   }
 
-  List<String> _daysOfWeek = [
+  final List<String> _daysOfWeek = [
     "Sunday",
     "Monday",
     "Thusday",
@@ -58,7 +58,7 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
     "Saturday",
   ];
 
-  List<String> _selectedDays = [];
+  final List<String> _selectedDays = [];
 
   List<String> generateRoomNbrs(int len) {
     List<String> possibleRoomNbrs = <String>[];
@@ -198,7 +198,7 @@ class _AddUniAppointmentDialogState extends State<AddUniAppointmentDialog> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
 
               child: DropdownButtonFormField<String>(
-                value: _type,
+                initialValue: _type,
 
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),

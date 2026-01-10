@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:unitime/core/constants/appColors.dart';
 import 'package:unitime/repository/uni_appointment_repository.dart';
 import 'package:unitime/ui/calendar_view.dart';
 import 'package:unitime/ui/feed_view.dart';
+import 'package:unitime/ui/first_time_screen_promotion_section.dart';
 import 'package:unitime/ui/profile_view.dart';
 import 'package:unitime/ui/updates_view.dart';
 import 'package:unitime/viewmodels/calendar_view_model.dart';
@@ -18,8 +20,22 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'UniTime',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(),
-      home: MyHomePage(title: "UniTime"),
+      theme: ThemeData(
+        colorScheme: ColorScheme(
+          brightness: Brightness.light,
+          primary: AppColors.primaryColor,
+          onPrimary: AppColors.surfaceColor,
+          secondary: AppColors.secondaryColor,
+          onSecondary: Colors.black,
+          onError: AppColors.surfaceColor,
+          error: AppColors.errorColor,
+          surface: AppColors.surfaceColor,
+          onSurface: Colors.black,
+          tertiary: AppColors.tertiaryColor,
+          onTertiary: AppColors.surfaceColor,
+        ),
+      ),
+      home: FirstTimeScreenPromotionSection(),
     );
   }
 }
@@ -35,20 +51,29 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
-  final _pages = const [
-    FeedView(),
-    //CalendarView(),
-    UpdatesView(),
-    ProfileView(),
-  ];
+  final CalendarViewModel calendarViewModel = CalendarViewModel(
+    uniAppointmentRepository: UniAppointmentRepository(),
+  );
+
+  late final MyCalendarView _calendarView;
+  late final _pages;
+  @override
+  void initState() {
+    super.initState();
+    _calendarView = MyCalendarView(viewModel: calendarViewModel);
+    _pages = [FeedView(), _calendarView, UpdatesView(), ProfileView()];
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    CalendarViewModel viewModel = CalendarViewModel(
-      uniAppointmentRepository: UniAppointmentRepository(),
-    );
     return Scaffold(
-      body: CalendarView(viewModel: viewModel),
+      body: _pages[_currentIndex],
       bottomNavigationBar: _bottomNavBar(context),
     );
   }

@@ -136,8 +136,9 @@ class _RegisterViewState extends State<RegisterView> {
                       fillColor: Colors.grey[50],
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty)
+                      if (value == null || value.isEmpty) {
                         return 'Mot de passe requis';
+                      }
                       if (value.length < 6) return '6 caractères minimum';
                       return null;
                     },

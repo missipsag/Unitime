@@ -9,12 +9,12 @@ class CustomListTile extends StatefulWidget {
   final double paddingV = 12;
 
   const CustomListTile({
-    Key? key,
+    super.key,
     required this.title,
     required this.subtitle,
     required this.icon,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   State<CustomListTile> createState() => _CustomListTileState();

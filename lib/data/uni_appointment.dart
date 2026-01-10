@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:flutter/widgets.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -8,7 +7,8 @@ import 'package:unitime/core/constants/uni_appointment_type.dart';
 import '../core/constants/uni_appointment_scope.dart';
 
 class UniAppointment extends Appointment {
-  final Long id;
+  @override
+  final int id;
   final DateTime start;
   final DateTime end;
   final String title;
@@ -38,7 +38,7 @@ class UniAppointment extends Appointment {
   factory UniAppointment.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-        'id': Long id,
+        'id': int id,
         'title': String title,
         'startTime': DateTime start,
         'endTime': DateTime end,

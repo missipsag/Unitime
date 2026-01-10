@@ -8,8 +8,8 @@ enum TPColor { green }
 enum TDColor { orange }
 
 Map<UniAppointmentType, Color> appointementColor = {
-  UniAppointmentType.COURSE: Colors.blue,
-  UniAppointmentType.TD: Colors.deepOrangeAccent,
-  UniAppointmentType.TP: Colors.green,
-  UniAppointmentType.SPECIAL_EVENT: Colors.purpleAccent,
+  UniAppointmentType.COURSE: const Color.fromARGB(255, 71, 163, 239),
+  UniAppointmentType.TD: const Color.fromARGB(255, 255, 138, 102),
+  UniAppointmentType.TP: const Color.fromARGB(255, 96, 226, 100),
+  UniAppointmentType.SPECIAL_EVENT: const Color.fromARGB(255, 234, 118, 255),
 };

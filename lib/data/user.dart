@@ -1,7 +1,7 @@
-import 'dart:ffi';
+
 
 class User {
-  final Long id;
+  final int id;
   final String email;
   final String firstName;
   final String lastName;
@@ -20,7 +20,7 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-        'id': Long id,
+        'id': int id,
         'email': String email,
         'firstName': String firstName,
         'lastName': String lastName,

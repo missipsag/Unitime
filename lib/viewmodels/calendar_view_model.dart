@@ -1,20 +1,27 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:unitime/core/utils/command.dart';
+import 'package:unitime/core/utils/result.dart';
 import 'package:unitime/data/uni_appointment.dart';
 import 'package:unitime/repository/uni_appointment_repository.dart';
 
 class CalendarViewModel extends ChangeNotifier {
   CalendarViewModel({
     required UniAppointmentRepository uniAppointmentRepository,
-  }) : _uniAppointmentRepository = uniAppointmentRepository;
+  }) : _uniAppointmentRepository = uniAppointmentRepository {
+    loadAppointments = Command(_loadAppointments)..execute();
+  }
 
   final UniAppointmentRepository _uniAppointmentRepository;
 
   List<UniAppointment> _appointments = [];
 
-  List<UniAppointment> get appointments => _appointments;
+  UnmodifiableListView<UniAppointment> get appointments =>
+      UnmodifiableListView(_appointments);
 
   static final DateFormat timeFormat = DateFormat('hh:mm a');
   static final DateFormat monthYearFormat = DateFormat('MMMM yyyy');
@@ -56,84 +63,27 @@ class CalendarViewModel extends ChangeNotifier {
 
   CalendarController get controller => _controller;
 
-  late String titleDate;
+  late String _titleDate;
+  String get titleDate => _titleDate;
+
   List<DateTime> visibleDates = <DateTime>[];
 
-  Widget _appointmentBuilder(
-    BuildContext context,
-    CalendarAppointmentDetails details,
-  ) {
-    UniAppointment appointment = details.appointments.first;
-    final String location = appointment.location!;
-    return RepaintBoundary(
-      child: Container(
-        padding: const EdgeInsets.only(left: 4),
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(6)),
-          color: appointment.color,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+  late final Command loadAppointments;
 
-          children: [
-            SizedBox(
-              width: details.bounds.width,
+  Future<Result> _loadAppointments() async {
+    try {
+      final result = await _uniAppointmentRepository.getAllAppointments();
 
-              child: Text(
-                appointment.subject,
-                textAlign: TextAlign.start,
-                style: const TextStyle(overflow: TextOverflow.fade),
-                softWrap: false,
-              ),
-            ),
-            if (_controller.view == CalendarView.month &&
-                details.bounds.height > 50) ...[
-              SizedBox(
-                width: details.bounds.width,
-
-                child: Text(
-                  location,
-                  style: const TextStyle(overflow: TextOverflow.fade),
-                  softWrap: false,
-                ),
-              ),
-              SizedBox(
-                width: details.bounds.width,
-
-                child: Text(
-                  "${timeFormat.format(appointment.startTime)} - ${timeFormat.format(appointment.endTime)}",
-                  style: const TextStyle(overflow: TextOverflow.fade),
-                  softWrap: false,
-                ),
-              ),
-            ],
-            if (_controller.view == CalendarView.day ||
-                _controller.view == CalendarView.workWeek ||
-                _controller.view == CalendarView.schedule) ...[
-              SizedBox(
-                width: details.bounds.width,
-
-                child: Text(
-                  location,
-                  style: const TextStyle(overflow: TextOverflow.fade),
-                  softWrap: false,
-                ),
-              ),
-              SizedBox(
-                width: details.bounds.width,
-
-                child: Text(
-                  "${timeFormat.format(appointment.startTime)} - ${timeFormat.format(appointment.endTime)}",
-                  style: const TextStyle(overflow: TextOverflow.fade),
-                  softWrap: false,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
+      switch (result) {
+        case Ok<List<UniAppointment>>():
+          _appointments = result.value;
+          break;
+        case Error<List<UniAppointment>>():
+      }
+      return result;
+    } finally {
+      notifyListeners();
+    }
   }
 
   void changeTitleDisplayDate(ViewChangedDetails details) {
@@ -164,18 +114,5 @@ class CalendarViewModel extends ChangeNotifier {
 
   void updateIcon() {
     selectedIcon = viewToIcon[_controller.view] ?? Icons.view_day;
-  }
-
-  Future<List<UniAppointment>> getAllAppointments() async {
-    try {
-      final appointments = await _uniAppointmentRepository.getAllAppointments();
-      if (appointments is List<UniAppointment>) {
-        _appointments = appointments;
-      }
-
-      return _appointments;
-    } finally {
-      notifyListeners();
-    }
   }
 }

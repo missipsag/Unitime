@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:unitime/core/dialogs/add_uni_appointment_dialog.dart';
-import 'package:unitime/data/uni_appointment.dart';
 import 'package:unitime/data/uni_appointment_data_source.dart';
-import 'package:unitime/service/uni_appointment_service.dart';
 import 'package:unitime/viewmodels/calendar_view_model.dart';
 
 // TODOS :
@@ -16,29 +12,46 @@ import 'package:unitime/viewmodels/calendar_view_model.dart';
 //* now we implemented that in the front end but in the backend not yet. It just happens
 //* that the recurrence overrides the date.
 
-class CalendarView extends StatelessWidget {
-  const CalendarView({super.key, required this.viewModel});
+class MyCalendarView extends StatefulWidget {
+  const MyCalendarView({super.key, required this.viewModel});
 
   final CalendarViewModel viewModel;
 
   @override
+  State<MyCalendarView> createState() => _MyCalendarViewState();
+}
+
+class _MyCalendarViewState extends State<MyCalendarView> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    widget.viewModel.loadAppointments.execute();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: SafeArea(
         child: ListenableBuilder(
-          listenable: viewModel,
+          listenable: widget.viewModel.loadAppointments,
           builder: (context, _) {
+            if (widget.viewModel.loadAppointments.running) {
+              return const Center(child: CircularProgressIndicator());
+            }
             return SfCalendar(
-              controller: viewModel.controller,
+              controller: widget.viewModel.controller,
+              view: CalendarView.month,
               headerDateFormat: "EEE",
               initialDisplayDate: DateTime.now(),
               initialSelectedDate: DateTime.now(),
               allowViewNavigation: true,
               viewNavigationMode: ViewNavigationMode.snap,
               onViewChanged: (details) {
-                viewModel.visibleDates = details.visibleDates;
-                viewModel.updateIcon();
-                viewModel.changeTitleDisplayDate(details);
+                widget.viewModel.visibleDates = details.visibleDates;
+                widget.viewModel.updateIcon();
+                widget.viewModel.changeTitleDisplayDate(details);
               },
               monthViewSettings: const MonthViewSettings(
                 dayFormat: "EEE",
@@ -52,12 +65,14 @@ class CalendarView extends StatelessWidget {
                 agendaItemHeight: 60,
                 showAgenda: false,
               ),
-              dataSource: UniAppointmentDataSource(viewModel.appointments),
+              dataSource: UniAppointmentDataSource(
+                widget.viewModel.appointments,
+              ),
               showNavigationArrow: false,
               timeSlotViewSettings: const TimeSlotViewSettings(
                 startHour: 7,
-                endHour: 18,
-                nonWorkingDays: [DateTime.friday],
+                endHour: 20,
+                // nonWorkingDays: [DateTime.friday],
                 timeIntervalHeight: 40,
               ),
 
@@ -67,63 +82,61 @@ class CalendarView extends StatelessWidget {
               scheduleViewSettings: const ScheduleViewSettings(
                 appointmentItemHeight: 60,
               ),
-              monthCellBuilder:
-                  (BuildContext context, MonthCellDetails details) {
-                    final appointments = details.appointments
-                        .cast<Appointment>();
-                    return RepaintBoundary(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black87,
-                          border: Border.all(color: Colors.black),
-                        ),
-                        child: Column(
-                          children: [
-                            // Date Number
-                            Text(
-                              details.date.day.toString(),
+              // monthCellBuilder:
+              //     (BuildContext context, MonthCellDetails details) {
+              //       final appointments = details.appointments
+              //           .cast<Appointment>();
+              //       return RepaintBoundary(
+              //         child: Container(
+              //           decoration: BoxDecoration(
+              //             color: Colors.black87,
+              //             border: Border.all(color: Colors.black),
+              //           ),
+              //           child: Column(
+              //             children: [
+              //               // Date Number
+              //               Text(
+              //                 details.date.day.toString(),
 
-                              style: TextStyle(
-                                color: Colors.white,
+              //                 style: TextStyle(
+              //                   color: Colors.white,
+              //                   fontSize: 11,
+              //                 ),
+              //               ),
 
-                                fontSize: 11,
-                              ),
-                            ),
+              //               ...appointments.take(3).map((appointment) {
+              //                 return Container(
+              //                   margin: const EdgeInsets.symmetric(
+              //                     vertical: 1,
+              //                     horizontal: 2,
+              //                   ),
+              //                   padding: const EdgeInsets.symmetric(
+              //                     vertical: 2,
+              //                     horizontal: 4,
+              //                   ),
+              //                   decoration: BoxDecoration(
+              //                     color: appointment.color,
+              //                     borderRadius: BorderRadius.circular(4),
+              //                   ),
+              //                   width: double.infinity,
+              //                   child: Text(
+              //                     softWrap: false,
+              //                     appointment.subject,
+              //                     style: const TextStyle(
+              //                       color: Colors.white,
+              //                       fontSize: 10,
 
-                            ...appointments.take(3).map((appointment) {
-                              return Container(
-                                margin: const EdgeInsets.symmetric(
-                                  vertical: 1,
-                                  horizontal: 2,
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 2,
-                                  horizontal: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: appointment.color,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                width: double.infinity,
-                                child: Text(
-                                  softWrap: false,
-                                  appointment.subject,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-
-                                    overflow: TextOverflow.fade,
-                                  ),
-                                ),
-                              );
-                            }),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+              //                       overflow: TextOverflow.fade,
+              //                     ),
+              //                   ),
+              //                 );
+              //               }),
+              //             ],
+              //           ),
+              //         ),
+              //       );
+              //     },
             );
-            ;
           },
         ),
       ),
@@ -134,8 +147,8 @@ class CalendarView extends StatelessWidget {
 // late String _titleDate;
 // List<DateTime> _visibleDates = <DateTime>[];
 
-//        the app bar
-// AppBar(
+// //        the app bar
+// AppBar _appBar =    AppBar(
 // title: Text(_titleDate),
 // actions: [
 // IconButton(

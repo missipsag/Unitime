@@ -1,6 +1,4 @@
-
 import 'package:flutter/material.dart';
-
 
 class UserProfileWidget extends StatelessWidget {
   final String initials;
@@ -8,11 +6,11 @@ class UserProfileWidget extends StatelessWidget {
   final String email;
 
   const UserProfileWidget({
-    Key? key,
+    super.key,
     required this.initials,
     required this.username,
     required this.email,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +18,11 @@ class UserProfileWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 125, vertical: 30),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.yellow, Colors.black54, Colors.black],
+          colors: [
+            Theme.of(context).colorScheme.primary,
+            Colors.black54,
+            Theme.of(context).colorScheme.surface,
+          ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -48,7 +50,7 @@ class UserProfileWidget extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 45,
-                backgroundColor: Colors.amber[600],
+                backgroundColor: Theme.of(context).colorScheme.tertiary,
                 child: Text(
                   initials,
                   style: const TextStyle(
@@ -62,8 +64,12 @@ class UserProfileWidget extends StatelessWidget {
               GestureDetector(
                 child: CircleAvatar(
                   radius: 18,
-                  backgroundColor: Colors.black,
-                  child: const Icon(Icons.edit, size: 18, color: Colors.amber),
+                  backgroundColor: Theme.of(context).colorScheme.onTertiary,
+                  child: Icon(
+                    Icons.edit,
+                    size: 18,
+                    color: Theme.of(context).colorScheme.tertiary,
+                  ),
                 ),
               ),
             ],

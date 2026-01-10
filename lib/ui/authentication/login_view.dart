@@ -105,8 +105,9 @@ class _LoginViewState extends State<LoginView> {
                       fillColor: Colors.grey[50],
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty)
+                      if (value == null || value.isEmpty) {
                         return 'Mot de passe requis';
+                      }
                       return null;
                     },
                   ),

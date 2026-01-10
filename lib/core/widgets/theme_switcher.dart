@@ -5,10 +5,10 @@ class ThemeSwitcherCard extends StatelessWidget {
   final Function(ThemeMode) onModeChanged;
 
   const ThemeSwitcherCard({
-    Key? key,
+    super.key,
     required this.currentMode,
     required this.onModeChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +25,13 @@ class ThemeSwitcherCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.wb_sunny, color: Colors.deepPurple),
+                  child: Icon(
+                    Icons.wb_sunny,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Column(
@@ -42,7 +45,7 @@ class ThemeSwitcherCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      _getSubtitle(),
+                      'Theme',
                       style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
                   ],
@@ -59,18 +62,22 @@ class ThemeSwitcherCard extends StatelessWidget {
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   _buildModeButton(
+                    context: context,
                     icon: Icons.wb_sunny,
                     isSelected: currentMode == ThemeMode.light,
                     onTap: () => onModeChanged(ThemeMode.light),
                   ),
                   _buildModeButton(
+                    context: context,
                     icon: Icons.nights_stay,
                     isSelected: currentMode == ThemeMode.dark,
                     onTap: () => onModeChanged(ThemeMode.dark),
                   ),
                   _buildModeButton(
+                    context: context,
                     icon: Icons.settings,
                     isSelected: currentMode == ThemeMode.system,
                     onTap: () => onModeChanged(ThemeMode.system),
@@ -85,6 +92,7 @@ class ThemeSwitcherCard extends StatelessWidget {
   }
 
   Widget _buildModeButton({
+    required BuildContext context,
     required IconData icon,
     required bool isSelected,
     required VoidCallback onTap,
@@ -92,17 +100,15 @@ class ThemeSwitcherCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.black : Colors.transparent,
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(icon, color: isSelected ? Colors.white : Colors.black),
       ),
     );
-  }
-
-  static String _getSubtitle() {
-    return "Mode clair activé"; // Could be dynamic
   }
 }
