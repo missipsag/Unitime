@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:unitime/core/utils/result.dart';
 
 class AuthenticationService {
@@ -12,9 +11,6 @@ class AuthenticationService {
 
   factory AuthenticationService() => _shared;
 
-  final storage = FlutterSecureStorage();
-  String? token;
-
   Future<Result<void>> login(String email, String password) async {
     try {
       final res = await http.post(
@@ -23,9 +19,9 @@ class AuthenticationService {
       );
 
       if (res.statusCode == 200 && res.body.isNotEmpty) {
-        token = jsonDecode(res.body)['token'];
-        storage.write(key: "token", value: token);
-        return Result.ok(null);
+        final token = jsonDecode(res.body)['token'];
+
+        return Result.ok(token);
       } else {
         return Result.error(Exception("Login failed"));
       }
@@ -34,7 +30,7 @@ class AuthenticationService {
     }
   }
 
-  Future<Result<void>> register(
+  Future<Result<String>> register(
     String email,
     String password,
     String firstName,
@@ -52,10 +48,8 @@ class AuthenticationService {
       );
 
       if (res.statusCode == 200 && res.body.isNotEmpty) {
-        token = jsonDecode(res.body)['token'];
-        storage.write(key: "token", value: token);
-
-        return Result.ok(null);
+        final token = jsonDecode(res.body)['token'];
+        return Result.ok(token);
       } else {
         return Result.error(Exception("Register failed"));
       }
