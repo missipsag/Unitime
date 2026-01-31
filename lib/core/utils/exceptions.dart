@@ -19,6 +19,8 @@ class CouldNotLogInUserAuthException implements Exception {}
 
 class CouldNotRegisterUserAuthException implements Exception {}
 
+class CouldNotLogOutUserAuthException implements Exception {}
+
 // ======================== CRUD EXCEPTIONS =========================
 // appointments related exceptions
 class CouldNotCreateAppointmentException implements Exception {}
@@ -60,4 +62,5 @@ class CouldNotDeleteUserException implements Exception {}
 // Jwt related Exceptions
 
 class JwtTokenExpiredException implements Exception {}
+
 class CouldNotGetJWTToken implements Exception {}
