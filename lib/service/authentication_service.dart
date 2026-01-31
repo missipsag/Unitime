@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:unitime/core/utils/exceptions.dart';
 import 'package:unitime/core/utils/result.dart';
 
 class AuthenticationService {
@@ -11,7 +12,7 @@ class AuthenticationService {
 
   factory AuthenticationService() => _shared;
 
-  Future<Result<void>> login(String email, String password) async {
+  Future<Result<String>> login(String email, String password) async {
     try {
       final res = await http.post(
         Uri.parse("http://localhost:8080/api/authentication/login"),
@@ -23,7 +24,7 @@ class AuthenticationService {
 
         return Result.ok(token);
       } else {
-        return Result.error(Exception("Login failed"));
+        return Result.error(CouldNotLogInUserAuthException());
       }
     } on Exception catch (e) {
       return Result.error(e);
@@ -51,7 +52,7 @@ class AuthenticationService {
         final token = jsonDecode(res.body)['token'];
         return Result.ok(token);
       } else {
-        return Result.error(Exception("Register failed"));
+        return Result.error(CouldNotRegisterUserAuthException());
       }
     } on Exception catch (e) {
       return Result.error(e);
