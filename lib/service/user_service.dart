@@ -1,16 +1,18 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:unitime/core/utils/exceptions.dart';
 import 'package:unitime/core/utils/result.dart';
 import 'package:unitime/data/user.dart';
 
 class UserService {
   UserService();
 
-  Future<Result<User>> getUser() async {
+  Future<Result<User>> getUser(String token) async {
     try {
       final res = await http.get(
         Uri.parse("http://localhost:8080/api/users/me"),
+        headers: {'Authorization ': 'Bearer $token'}
       );
 
       if (res.statusCode == 200) {
@@ -26,18 +28,19 @@ class UserService {
           ),
         );
       } else {
-        return Result.error(Exception("Failed to fetch user."));
+        return Result.error(CouldNotGetUserException());
       }
     } on Exception catch (e) {
       return Result.error(e);
     }
   }
 
-  Future<Result<User>> updateUser(User user) async {
+  Future<Result<User>> updateUser(User user, String token) async {
     try {
       final res = await http.put(
         Uri.parse("http://localhost:8080/api/users/edit"),
-        body: user,
+        body: jsonEncode(user),
+        headers: {'Authorization': 'Bearer $token'}
       );
 
       if (res.statusCode == 200) {
@@ -54,7 +57,7 @@ class UserService {
           ),
         );
       } else {
-        return Result.error(Exception("Failed to update user."));
+        return Result.error(CouldNotUpdateUserException());
       }
     } on Exception catch (e) {
       return Result.error(e);
