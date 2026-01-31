@@ -10,11 +10,11 @@ class UserRepository {
   factory UserRepository() => _shared;
   final UserService _userService = UserService();
 
-  Future<Result<User>> getUser() async {
-    return await _userService.getUser();
+  Future<Result<User>> getUser(String token) async {
+    return await _userService.getUser(token);
   }
 
-  Future<Result<User>> updateUser(User user) async {
-    return await _userService.updateUser(user);
+  Future<Result<User>> updateUser(User user, String token) async {
+    return await _userService.updateUser(user, token);
   }
 }
