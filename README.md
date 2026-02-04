@@ -14,12 +14,14 @@ Unitime — a Flutter mobile app to help university students manage campus life:
 
 A short screen recording demonstrating core flows is included in the repository as [Unitime_screen_recording.mp4](Unitime_screen_recording.mp4).
 
-Embedded preview (controls available):
+Embedded demo (iframe):
 
-<video controls width="720" poster="">
-	<source src="./Unitime_screen_recording.mp4" type="video">
-	Your browser does not support the video tag. Download the video directly: <a href="Unitime_screen_recording.mp4">Unitime_screen_recording.mp4</a>
-</video>
+<iframe width="720" height="405" src="https://www.youtube.com/embed/l5Bsi4z_IQs" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+Fallback link: https://youtube.com/shorts/l5Bsi4z_IQs
+
+Note: GitHub may sanitize or block iframes in README views; the iframe is included per your request.
+
 
 If the embedded player does not display on your platform (GitHub may sanitize HTML in some views), open the file locally:
 
