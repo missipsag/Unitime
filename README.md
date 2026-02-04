@@ -12,16 +12,16 @@ Unitime — a Flutter mobile app to help university students manage campus life:
 
 ## Demo Video
 
-A short demo of Unitime is available on YouTube: https://youtube.com/shorts/l5Bsi4z_IQs
+A short screen recording demonstrating core flows is included in the repository as [Unitime_screen_recording.mp4](Unitime_screen_recording.mp4).
 
-Embedded preview (YouTube iframe):
+Embedded preview (controls available):
 
-<iframe width="720" height="405" src="https://www.youtube.com/embed/l5Bsi4z_IQs" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<video controls width="720" poster="">
+	<source src="./Unitime_screen_recording.mp4" type="video">
+	Your browser does not support the video tag. Download the video directly: <a href="Unitime_screen_recording.mp4">Unitime_screen_recording.mp4</a>
+</video>
 
-Fallbacks:
-
-- Open the YouTube link directly: https://youtube.com/shorts/l5Bsi4z_IQs
-- If you keep a local copy in the repo root, you can still open it locally:
+If the embedded player does not display on your platform (GitHub may sanitize HTML in some views), open the file locally:
 
 Linux:
 
@@ -35,7 +35,7 @@ macOS:
 open Unitime_screen_recording.mp4
 ```
 
-Note: GitHub README rendering may sanitize or block iframes in some views. The YouTube link above will always work.
+Or play in your preferred media player.
 
 ## Getting Started
 
@@ -78,40 +78,30 @@ flutter build ipa
 ```
 
 ## Project Structure
+# unitime
 
-- `lib/` — main Flutter source code
-	- `core/` — constants, utils, widgets
-	- `data/` — models and local data sources
-	- `repository/` — repositories that provide data to viewmodels
-	- `service/` — services for API, storage, authentication
-	- `ui/` — views/screens
-	- `viewmodels/` — state management and business logic
-- `assets/` — images and static assets
-- `android/`, `ios/`, `web/`, `linux/`, `windows/`, `macos/` — platform projects
-- `test/` — unit and widget tests
+A new Flutter project.
 
-## Configuration
+## Demo Video
 
-- App-level configuration (API endpoints, feature flags) is in `lib/core/constants`.
-- Secure storage is implemented via `flutter_secure_storage` for tokens.
+Embedded demo (iframe):
 
-## Running Tests
+<iframe width="720" height="405" src="https://www.youtube.com/embed/l5Bsi4z_IQs" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-```
-flutter test
-```
+Fallback link: https://youtube.com/shorts/l5Bsi4z_IQs
 
-## Contributing
+Note: GitHub may sanitize or block iframes in README views; the iframe is included per your request.
 
-Contributions are welcome. Please open issues or pull requests describing proposed changes. Keep changes focused and provide tests where appropriate.
+## Getting Started
 
-## Notes
+This project is a starting point for a Flutter application.
 
-- If `Unitime_screen_recording.mp4` is not present in the repo root, please add it to the repository (root or `assets/`) and update the path in this README accordingly.
+A few resources to get you started if this is your first Flutter project:
 
-## Contact
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For questions or help, open an issue in this repository.
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
 
----
-Generated README for developer onboarding and users.
