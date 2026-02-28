@@ -1,1 +1,1 @@
-enum UniAppointmentScope { PROMOTION, GROUP }
+enum UniAppointmentScope { PROMOTION, GROUP, GLOBAL }
