@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:unitime/core/constants/app_routes.dart';
 import 'package:unitime/core/utils/result.dart';
 import 'package:unitime/data/uni_appointment.dart';
 
@@ -52,7 +52,7 @@ class UniAppointmentService {
     }
   }
 
-  Future<Result<void>> deleteAppointment(Long appointmentId) async {
+  Future<Result<void>> deleteAppointment(int appointmentId) async {
     try {
       final res = await http.delete(
         Uri.parse("http://localhost:8080/api/appointments/delete"),
@@ -61,6 +61,53 @@ class UniAppointmentService {
 
       if (res.statusCode == 200) {
         return Result.ok(null);
+      } else {
+        return Result.error(Exception("Invalid response."));
+      }
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
+  }
+
+  Future<Result<List<UniAppointment>>> getCurrentAppointments(
+    String token,
+  ) async {
+    try {
+      final res = await http.post(
+        Uri.parse(TAppRoutes.getCurrentAppointmentsRoute),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (res.statusCode == 200 && res.body.isNotEmpty) {
+        List<dynamic> appointmentsJson = jsonDecode(res.body);
+
+        final currAppointments = appointmentsJson
+            .map((app) => UniAppointment.fromJson(app))
+            .toList();
+
+        return Result.ok(currAppointments);
+      } else {
+        return Result.error(Exception("Invalid response."));
+      }
+    } on Exception catch (e) {
+      return Result.error(e);
+    }
+  }
+
+  Future<Result<List<UniAppointment>>> getUpcomingSpecialEvents(
+    String token,
+  ) async {
+    try {
+      final res = await http.post(
+        Uri.parse(TAppRoutes.getUpcomingSpecialEventsRoute),
+        headers: {'Authorization ': 'Bearer $token'},
+      );
+
+      if (res.statusCode == 200 && res.body.isNotEmpty) {
+        List<dynamic> specialEventsJson = jsonDecode(res.body);
+        final specialEvents = specialEventsJson
+            .map((app) => UniAppointment.fromJson(app))
+            .toList();
+        return Result.ok(specialEvents);
       } else {
         return Result.error(Exception("Invalid response."));
       }
