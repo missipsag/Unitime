@@ -48,18 +48,27 @@ class TAppTheme {
     primaryColor: AppColors.primaryColor,
     colorScheme: ColorScheme(
       brightness: Brightness.dark,
-      primary: AppColors.primaryColor,
+
+      primary: const Color(0xFF52C488),
       onPrimary: const Color(0xFFF9FAFB),
-      secondary: const Color(0xFF9CA3AF),
-      onSecondary: Colors.black,
+      primaryContainer: const Color(0xFF8dd8b0),
+      onPrimaryContainer: const Color.fromARGB(255, 0, 148, 69),
+
+      surface: const Color(0xFF121212),
+      onSurface: const Color(0xFFfafafa),
+      surfaceContainer:const Color(0xFF363636),
+      
+
+      secondary:  const Color(0xFFc6ebd8),
+      onSecondary: Color(0xFFF9FAFB),
+      secondaryContainer: const Color.fromARGB(255, 159, 207, 181),
+      onSecondaryContainer: Color(0xFFF9FAFB) ,
+
       onError: AppColors.surfaceColor,
       error: AppColors.errorColor,
-      surface: const Color(0xFF111827),
-      onSurface: Colors.black,
-      tertiary: AppColors.tertiaryColor,
-      onTertiary: AppColors.surfaceColor,
+
     ),
-    scaffoldBackgroundColor: Colors.black,
+    scaffoldBackgroundColor: Color(0xFF121212),
     textTheme: TTextTheme.darkTextTheme,
     chipTheme: TChipTheme.lightChipTheme,
     checkboxTheme: TCheckBoxTheme.darkCheckBoxTheme,
