@@ -40,22 +40,23 @@ class UniAppointment extends Appointment {
       {
         'id': int id,
         'title': String title,
-        'startTime': DateTime start,
-        'endTime': DateTime end,
+        'startTime': String start,
+        'endTime': String end,
         'location': String location,
-        'appointmentType': UniAppointmentType uniAppointmentType,
-        'appointmentScope': UniAppointmentScope uniAppointmentScope,
+        'appointmentType': String uniAppointmentType,
+        'appointmentScope': String uniAppointmentScope,
         'recurrenceRule': String recurrence,
       } =>
         UniAppointment(
           id: id,
           title: title,
-          start: start,
-          end: end,
+          start: DateTime.parse(start),
+          end: DateTime.parse(end),
           appointmentLocation: location,
-          uniAppointmentType: uniAppointmentType,
-          uniAppointmentScope: uniAppointmentScope,
+          uniAppointmentType:UniAppointmentType.values.byName(uniAppointmentType)  ,
+          uniAppointmentScope: UniAppointmentScope.values.byName(uniAppointmentScope),
           recurrence: recurrence,
+          
         ),
       _ => throw const FormatException("Failed to load appointment."),
     };
