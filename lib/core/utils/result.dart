@@ -8,6 +8,8 @@
 
 /// Use [Result.ok] to create a successful result with a value of type [T].
 /// Use [Result.error] to create an error result with an [Exception].
+library;
+
 
 
 

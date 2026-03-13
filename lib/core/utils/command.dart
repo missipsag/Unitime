@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 class Command extends ChangeNotifier {
   Command(this._action);
 
-  Future<void> Function() _action;
+  final Future<void> Function() _action;
 
   bool _running = false;
   bool get running => _running;
