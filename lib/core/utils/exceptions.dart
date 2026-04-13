@@ -1,7 +1,34 @@
 //  ======================= AUTH EXCEPTIONS =========================
-class UserNotAuthenticatedAuthException implements Exception {}
+class UnauthorizedException implements Exception {}
 
-class UserNotFoundAuthException implements Exception {}
+class ServerException implements Exception {
+  final String error;
+
+  ServerException(this.error);
+}
+
+class RateLimitException implements Exception {}
+
+class NetworkTimeoutException implements Exception {}
+
+class BadRequestException implements Exception {}
+
+class NoInternetException implements Exception {}
+
+class DataParsingException implements Exception {}
+
+class UnknownServiceException implements Exception {
+  final String error;
+
+  UnknownServiceException(this.error);
+}
+
+class NoValueAssociatedWithKeyException implements Exception {
+  final String error;
+  NoValueAssociatedWithKeyException(this.error);
+}
+
+class UserNotAuthenticatedAuthException implements Exception {}
 
 class WrongCredentialAuthException implements Exception {}
 
@@ -25,42 +52,50 @@ class CouldNotLogOutUserAuthException implements Exception {}
 // appointments related exceptions
 class CouldNotCreateAppointmentException implements Exception {}
 
-class CouldNotGetAppointmentException implements Exception {}
+class AppointmentNotFoundException implements Exception {}
 
 class CouldNotUpdateAppointmentException implements Exception {}
 
 class CouldNotDeleteAppointmentException implements Exception {}
 
+class AppointmentAlreadyExistsException implements Exception {}
+
 // group related exceptions
 class CouldNotCreateGroupException implements Exception {}
 
-class CouldNotGetGroupException implements Exception {}
+class GroupNotFoundException implements Exception {}
 
 class CouldNotUpdateGroupException implements Exception {}
 
 class CouldNotDeleteGroupException implements Exception {}
 
+class GroupAlreadyExistsException implements Exception {}
+
 // promotion related exceptions
 class CouldNotCreatePromotionException implements Exception {}
 
-class CouldNotGetPromotionException implements Exception {}
+class PromotionNotFoundException implements Exception {}
 
 class CouldNotUpdatePromotionException implements Exception {}
 
 class CouldNotDeletePromotionException implements Exception {}
 
-// user ralated expresions
+class PromotionAlreadyExistsException implements Exception {}
+
+// user related expression
 
 class CouldNotCreateUserException implements Exception {}
 
-class CouldNotGetUserException implements Exception {}
+class UserNotFoundException implements Exception {}
 
 class CouldNotUpdateUserException implements Exception {}
 
 class CouldNotDeleteUserException implements Exception {}
 
+class UserAlreadyExistsException implements Exception {}
+
 // Jwt related Exceptions
 
-class JwtTokenExpiredException implements Exception {}
+class JwtExpiredException implements Exception {}
 
-class CouldNotGetJWTToken implements Exception {}
+class CouldNotGetJWTException implements Exception {}
