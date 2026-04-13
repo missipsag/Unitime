@@ -1,228 +1,311 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:unitime/core/constants/app_spacing.dart';
+import 'package:unitime/viewmodels/register_view_model.dart';
 
 class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
+  const RegisterView({super.key, required this.viewModel});
 
+  final RegisterViewModel viewModel;
   @override
   State<RegisterView> createState() => _RegisterViewState();
 }
 
 class _RegisterViewState extends State<RegisterView> {
   final _formKey = GlobalKey<FormState>();
-  // Contrôleurs
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  late final TextEditingController _firstNameController;
+  late final TextEditingController _lastNameController;
 
-  bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
+  late final TextEditingController _confirmPasswordController;
+
+  late final ValueNotifier<bool> _isPasswordVisible;
+  late final ValueNotifier<bool> _isConfirmPasswordVisible;
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    widget.viewModel.register.removeListener(_handleRegisterError);
     super.dispose();
   }
 
   @override
+  void initState() {
+    super.initState();
+    _firstNameController = TextEditingController();
+    _lastNameController = TextEditingController();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
+    _isConfirmPasswordVisible = ValueNotifier<bool>(false);
+    _isPasswordVisible = ValueNotifier<bool>(false);
+    widget.viewModel.register.addListener(_handleRegisterError);
+  }
+
+  void _handleRegisterError() {
+    if (widget.viewModel.register.error != null) {
+      ThemeData theme = Theme.of(context);
+      if (widget.viewModel.register.error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "An error occurred when logging you in. Please try again later.",
+              style: theme.textTheme.bodyMedium!.copyWith(
+                color: theme.colorScheme.onError,
+              ),
+            ),
+            backgroundColor: theme.colorScheme.error,
+          ),
+        );
+        widget.viewModel.register.clear();
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+
+    final ThemeData theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        title: Text(
+          "Already have an account",
+          style: theme.textTheme.bodyMedium!.copyWith(
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
+        titleSpacing: 0,
+        foregroundColor: theme.colorScheme.onSurface,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Créer un compte',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Rejoignez UniTime pour gérer votre emploi du temps',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 40),
-
-                  // Champ Nom complet
-                  TextFormField(
-                    controller: _nameController,
-                    keyboardType: TextInputType.name,
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: 'Nom complet',
-                      prefixIcon: const Icon(Icons.person_outline),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(
+              context,
+            ).copyWith(overscroll: false),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.only(right: 24.0, left: 24.0, top: 24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Welcome to UniTime',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.headlineLarge!.copyWith(
+                        color: theme.colorScheme.primary,
                       ),
-                      filled: true,
-                      fillColor: Colors.grey[50],
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Nom requis';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Champ Email
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: const Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[50],
+                    //const SizedBox(height: TAppSpacing.md),
+                    SvgPicture.asset(
+                      "assets/illustrations/girl_walking_on_books.svg",
+                      height: screenHeight * 0.4,
+                      width: screenWidth * 0.9,
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Email requis';
-                      if (!value.contains('@')) return 'Email invalide';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
+                    const SizedBox(height: TAppSpacing.md),
 
-                  // Champ Mot de passe
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: !_isPasswordVisible,
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: 'Mot de passe',
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _isPasswordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                    // Champ Nom complet
+                    TextFormField(
+                      controller: _firstNameController,
+                      keyboardType: TextInputType.name,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        hint: Text("First name"),
+                        prefixIcon: Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _isPasswordVisible = !_isPasswordVisible;
-                          });
-                        },
+                        filled: true,
+                        fillColor: theme.colorScheme.surfaceContainer,
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[50],
+                      validator: (value) {
+                        if (value == null || value.isEmpty)
+                          return 'First name required';
+                        return null;
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Mot de passe requis';
-                      }
-                      if (value.length < 6) return '6 caractères minimum';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Champ Confirmation Mot de passe
-                  TextFormField(
-                    controller: _confirmPasswordController,
-                    obscureText: !_isConfirmPasswordVisible,
-                    textInputAction: TextInputAction.done,
-                    decoration: InputDecoration(
-                      labelText: 'Confirmer le mot de passe',
-                      prefixIcon: const Icon(Icons.lock_open_outlined),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _isConfirmPasswordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                    SizedBox(height: 16),
+                    TextFormField(
+                      controller: _lastNameController,
+                      keyboardType: TextInputType.name,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        hint: Text("Last name"),
+                        prefixIcon: Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _isConfirmPasswordVisible =
-                                !_isConfirmPasswordVisible;
-                          });
-                        },
+                        filled: true,
+                        fillColor: theme.colorScheme.surfaceContainer,
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[50],
+                      validator: (value) {
+                        if (value == null || value.isEmpty)
+                          return 'Last name required';
+                        return null;
+                      },
                     ),
-                    validator: (value) {
-                      if (value != _passwordController.text) {
-                        return 'Les mots de passe ne correspondent pas';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 32),
+                    SizedBox(height: 16),
 
-                  // Bouton S'inscrire
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // TODO: Logique d'inscription
-                        print("Registering ${_nameController.text}");
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                    // Champ Email
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: Icon(Icons.email_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: theme.colorScheme.surfaceContainer,
                       ),
-                      elevation: 2,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Email required';
+                        }
+                        if (!value.contains(
+                          RegExp(r'^[a-zA-Z0-9_\.]+@[a-zA-Z0-9.-]+\.(com)$'),
+                        )) {
+                          return 'Invalid email address';
+                        }
+                        return null;
+                      },
                     ),
-                    child: const Text(
-                      'S\'inscrire',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
+                    SizedBox(height: 16),
 
-                  // Lien vers Login
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Déjà un compte ?"),
-                      TextButton(
+                    // Champ Mot de passe
+                    ValueListenableBuilder(
+                      valueListenable: _isPasswordVisible,
+                      builder: (context, value, child) {
+                        return TextFormField(
+                          controller: _passwordController,
+                          obscureText: !_isPasswordVisible.value,
+                          textInputAction: TextInputAction.next,
+                          decoration: InputDecoration(
+                            hint: Text('Password'),
+                            prefixIcon: Icon(Icons.lock_outline),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                value ? Icons.visibility_off : Icons.visibility,
+                              ),
+                              onPressed: () {
+                                _isPasswordVisible.value = !value;
+                              },
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            filled: true,
+                            fillColor: theme.colorScheme.surfaceContainer,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'password required';
+                            }
+                            if (value.length < 6) return '6 characters minimum';
+                            return null;
+                          },
+                        );
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    // confirm password field
+                    ValueListenableBuilder(
+                      valueListenable: _isConfirmPasswordVisible,
+                      builder: (context, value, child) {
+                        return TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: !_isConfirmPasswordVisible.value,
+                          textInputAction: TextInputAction.done,
+                          decoration: InputDecoration(
+                            hint: Text('Confirm password'),
+                            prefixIcon: Icon(Icons.lock_open_outlined),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                value ? Icons.visibility_off : Icons.visibility,
+                              ),
+                              onPressed: () {
+                                _isConfirmPasswordVisible.value = !value;
+                              },
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            filled: true,
+                            fillColor: theme.colorScheme.surfaceContainer,
+                          ),
+                          validator: (value) {
+                            if (value != _passwordController.text) {
+                              return 'Passwords do not match';
+                            }
+                            if (value!.length < 6) {
+                              return 'Password must be at least 6 characters long';
+                            }
+                            if (!value.contains(
+                              RegExp(
+                                r'^[a-zA-Z0-9_@$*#&=+\?!|%ù!:;,<>\./çàèé-]+$',
+                              ),
+                            )) {
+                              return "Password must contain : UpperCase,  Lowercase, special characters, numbers.";
+                            }
+
+                            return null;
+                          },
+                        );
+                      },
+                    ),
+                    SizedBox(height: 32),
+
+                    SizedBox(
+                      width: screenWidth * 0.7,
+                      child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pop(context); // Retour au login
+                          if (_formKey.currentState!.validate()) {
+                            widget.viewModel.register.execute(
+                              _firstNameController.text,
+                              _lastNameController.text,
+                              _emailController.text,
+                              _passwordController.text,
+                            );
+                          }
                         },
-                        child: const Text(
-                          'Se connecter',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+
+                        child: ListenableBuilder(
+                          listenable: widget.viewModel.register,
+                          builder: (context, child) {
+                            if (widget.viewModel.register.running) {
+                              return Center(
+                                child: CircularProgressIndicator.adaptive(
+                                  backgroundColor: theme.colorScheme.onPrimary,
+                                ),
+                              );
+                            } else {
+                              return Text('Register');
+                            }
+                          },
                         ),
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(height: TAppSpacing.lg),
+                  ],
+                ),
               ),
             ),
           ),
