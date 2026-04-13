@@ -7,15 +7,15 @@ import 'package:unitime/data/uni_appointment.dart';
 
 class UpdatesViewModel extends ChangeNotifier {
   UpdatesViewModel() {
-    loadUpdates = Command(_loadUpdatedAppointments)..execute();
-    clearUpdates = Command(_clearUpdates);
+    loadUpdates = Command0(_loadUpdatedAppointments)..execute();
+    clearUpdates = Command0(_clearUpdates);
   }
 
   List<UniAppointment> _updtaedApps = [];
   List<UniAppointment> get updatedAppoitments => _updtaedApps;
 
-  late final Command loadUpdates;
-  late final Command clearUpdates;
+  late final Command0 loadUpdates;
+  late final Command0 clearUpdates;
 
   Future<Result> _loadUpdatedAppointments() async {
     final List<UniAppointment> mockUpdatedApps = [
