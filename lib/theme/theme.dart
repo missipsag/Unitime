@@ -20,16 +20,28 @@ class TAppTheme {
     scaffoldBackgroundColor: Colors.white,
     colorScheme: ColorScheme(
       brightness: Brightness.light,
+
+
       primary: AppColors.primaryColor,
       onPrimary: AppColors.surfaceColor,
+
+
       secondary: AppColors.secondaryColor,
       onSecondary: Colors.black,
+      secondaryContainer: const Color.fromARGB(255, 189, 230, 209),
+      onSecondaryContainer: Color(0xFFF9FAFB),
+
+
       onError: AppColors.surfaceColor,
       error: AppColors.errorColor,
+      onErrorContainer: AppColors.errorColor,
+
+
       surface: AppColors.surfaceColor,
       onSurface: Colors.black,
-      tertiary: AppColors.tertiaryColor,
-      onTertiary: AppColors.surfaceColor,
+      surfaceContainer: const Color.fromARGB(255, 201, 197, 197),
+
+
     ),
     textTheme: TTextTheme.lightTextTheme,
     chipTheme: TChipTheme.lightChipTheme,
@@ -56,17 +68,15 @@ class TAppTheme {
 
       surface: const Color(0xFF121212),
       onSurface: const Color(0xFFfafafa),
-      surfaceContainer:const Color(0xFF363636),
-      
+      surfaceContainer: const Color(0xFF363636),
 
-      secondary:  const Color(0xFFc6ebd8),
+      secondary: const Color(0xFFc6ebd8),
       onSecondary: Color(0xFFF9FAFB),
-      secondaryContainer: const Color.fromARGB(255, 159, 207, 181),
-      onSecondaryContainer: Color(0xFFF9FAFB) ,
+      secondaryContainer: const Color.fromARGB(255, 135, 160, 147),
+      onSecondaryContainer: Color(0xFFF9FAFB),
 
       onError: AppColors.surfaceColor,
       error: AppColors.errorColor,
-
     ),
     scaffoldBackgroundColor: Color(0xFF121212),
     textTheme: TTextTheme.darkTextTheme,
