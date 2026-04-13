@@ -1,77 +1,189 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:unitime/core/constants/app_spacing.dart';
+import 'package:unitime/providers/session_provider.dart';
+import 'package:unitime/repository/group_repository.dart';
+import 'package:unitime/repository/user_repository.dart';
+import 'package:unitime/ui/create_group_view.dart';
+import 'package:unitime/viewmodels/create_group_view_model.dart';
+import 'package:unitime/viewmodels/first_time_screen_group_view_model.dart';
 
 class FirstTimeScreenGroupSection extends StatefulWidget {
-  const FirstTimeScreenGroupSection({super.key});
+  const FirstTimeScreenGroupSection({super.key, required this.viewModel});
 
+  final FirstTimeScreenGroupViewModel viewModel;
   @override
   State<FirstTimeScreenGroupSection> createState() =>
-      FirstTimeScreenGroupSectionState();
+      _FirstTimeScreenGroupSectionState();
 }
 
-class FirstTimeScreenGroupSectionState
+class _FirstTimeScreenGroupSectionState
     extends State<FirstTimeScreenGroupSection> {
+  final _formKey = GlobalKey<FormState>();
+
+  late final TextEditingController _accessCodeController;
+
+  @override
+  void initState() {
+    super.initState();
+    _accessCodeController = TextEditingController();
+    widget.viewModel.joinGroup.addListener(_handleGetPromotionError);
+  }
+
+  @override
+  void dispose() {
+    _accessCodeController.dispose();
+    widget.viewModel.joinGroup.removeListener(_handleGetPromotionError);
+    super.dispose();
+  }
+
+  void _handleGetPromotionError() {
+    ThemeData theme = Theme.of(context);
+
+    if (widget.viewModel.joinGroup.completed) {
+      if (widget.viewModel.joinGroup.error != null ||
+          widget.viewModel.errorMessage != null) {
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              widget.viewModel.errorMessage ??
+                  "Something went wrong. Please try again later.",
+              style: theme.textTheme.bodyMedium!.copyWith(
+                color: theme.colorScheme.onError,
+              ),
+            ),
+            elevation: 2,
+            action: SnackBarAction(
+              label: "Got it",
+              textColor: theme.colorScheme.onError,
+
+              onPressed: () {
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+              },
+            ),
+            backgroundColor: theme.colorScheme.error,
+          ),
+        );
+        widget.viewModel.joinGroup.clear();
+        widget.viewModel.clearErrorMessage();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).colorScheme.surface,
-      // alignment: AlignmentGeometry.directional(0.0, 0.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        spacing: 100.0,
-        children: [
-          Text(
-            "Stay in sync with your group",
-            softWrap: true,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              decoration: TextDecoration.none,
-              color: Theme.of(context).colorScheme.onSurface,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 120),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Row(
+    //final int promotionId = ModalRoute.of(context)!.settings.arguments as int;
+    final int promotionId = 1;
+    final ThemeData theme = Theme.of(context);
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              spacing: 8.0,
               children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: const BorderRadiusGeometry.all(
-                        Radius.circular(5),
-                      ),
-                    ),
-
-                    elevation: 4.0,
+                Text(
+                  "Join your group",
+                  style: theme.textTheme.headlineLarge!.copyWith(
+                    color: theme.colorScheme.onSurface,
                   ),
-                  child: const Text("Join a group"),
                 ),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-
-                    shape: RoundedRectangleBorder(
-                      borderRadius: const BorderRadiusGeometry.all(
-                        Radius.circular(5),
-                      ),
-                    ),
-                    elevation: 4.0,
+                SvgPicture.asset(
+                  "assets/illustrations/Teaching-amico.svg",
+                  height: screenHeight * 0.4,
+                  width: screenWidth * 0.9,
+                ),
+                Text(
+                  "Next, join your Group— this is the specific section you are placed in for your practical labs and smaller classes.",
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge!.copyWith(
+                    color: Colors.grey,
                   ),
-                  child: const Text("Create a group"),
+                ),
+
+                const SizedBox(height: TAppSpacing.lg),
+                TextFormField(
+                  controller: _accessCodeController,
+                  decoration: InputDecoration(
+                    hint: Text("Access code"),
+                    prefixIcon: Icon(Icons.lock_open_outlined),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: theme.colorScheme.surfaceContainer,
+                  ),
+
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please insert your promotion's access code.";
+                    } else if (value.length < 6) {
+                      return "Access codes must be at least 6 characters long.";
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: TAppSpacing.md),
+                SizedBox(
+                  width: screenWidth,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        widget.viewModel.joinGroup.execute(
+                          _accessCodeController.text,
+                        );
+                      }
+                    },
+                    child: ListenableBuilder(
+                      listenable: widget.viewModel.joinGroup,
+                      builder: (context, child) {
+                        if (widget.viewModel.joinGroup.running) {
+                          return Center(
+                            child: CircularProgressIndicator.adaptive(
+                              backgroundColor: theme.colorScheme.onPrimary,
+                            ),
+                          );
+                        } else {
+                          return const Text("Join group");
+                        }
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: TAppSpacing.md),
+                SizedBox(
+                  width: screenWidth,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (context) => CreateGroupView(
+                            viewModel: CreateGroupViewModel(
+                              groupRepository: GroupRepository(),
+                              userRepository: UserRepository(),
+                              sessionProvider: context.read<SessionProvider>(),
+                            ),
+                          ),
+                          settings: RouteSettings(arguments: promotionId),
+                        ),
+                      );
+                    },
+                    child: const Text("Create your own"),
+                  ),
                 ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
