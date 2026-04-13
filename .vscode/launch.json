@@ -29,6 +29,19 @@
             "toolArgs": [
                 "--dart-define-from-file=.env.json"
             ]
+        },
+        {
+            "name": "Flutter Web (web security disabled)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "args": [
+                "--web-port=",
+                "35793",
+            ],
+            "toolArgs": [
+                "--dart-define-from-file=.env.json"
+            ]
         }
     ]
 }
