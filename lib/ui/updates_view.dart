@@ -53,15 +53,13 @@ class _UpdatesViewState extends State<UpdatesView> {
                       textAlign: TextAlign.start,
                       style: Theme.of(context).textTheme.headlineLarge,
                     ),
-                    TextButton(
+                    IconButton(
                       onPressed: () {
                         widget.viewModel.clearUpdates.execute();
                       },
-                      child: Text(
-                        "clear",
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
+                      icon: Icon(
+                        Icons.delete,
+                        color: Theme.of(context).colorScheme.error,
                       ),
                     ),
                   ],
@@ -180,4 +178,3 @@ class _UpdatesViewState extends State<UpdatesView> {
     );
   }
 }
-
