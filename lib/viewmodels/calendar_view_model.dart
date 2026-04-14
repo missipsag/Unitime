@@ -4,6 +4,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:unitime/core/constants/uni_appointment_type.dart';
 import 'package:unitime/core/utils/command.dart';
 import 'package:unitime/core/utils/result.dart';
 import 'package:unitime/data/uni_appointment.dart';
@@ -13,12 +14,15 @@ class CalendarViewModel extends ChangeNotifier {
   CalendarViewModel({
     required UniAppointmentRepository uniAppointmentRepository,
   }) : _uniAppointmentRepository = uniAppointmentRepository {
-    loadAppointments = Command(_loadAppointments)..execute();
+    loadAppointments = Command0(_loadAppointments)..execute();
+    _controller = CalendarController()..view = CalendarView.week;
   }
 
   final UniAppointmentRepository _uniAppointmentRepository;
 
   List<UniAppointment> _appointments = [];
+  String _error = '';
+  String get error => _error;
 
   UnmodifiableListView<UniAppointment> get appointments =>
       UnmodifiableListView(_appointments);
@@ -59,7 +63,17 @@ class CalendarViewModel extends ChangeNotifier {
     return iconToCalendarView[choice]!;
   }
 
-  final CalendarController _controller = CalendarController();
+  Color appointmentBackgroundWidgetColor(UniAppointmentType type) {
+    Map<UniAppointmentType, Color> colors = {
+      UniAppointmentType.COURSE: Color.fromARGB(255, 211, 231, 255),
+      UniAppointmentType.SPECIAL_EVENT: Color.fromARGB(255, 232, 217, 248),
+      UniAppointmentType.TD: Color.fromARGB(255, 255, 241, 223),
+      UniAppointmentType.TP: Color.fromARGB(255, 221, 255, 239),
+    };
+    return colors[type]!;
+  }
+
+  late final CalendarController _controller;
 
   CalendarController get controller => _controller;
 
@@ -68,7 +82,7 @@ class CalendarViewModel extends ChangeNotifier {
 
   List<DateTime> visibleDates = <DateTime>[];
 
-  late final Command loadAppointments;
+  late final Command0 loadAppointments;
 
   Future<Result> _loadAppointments() async {
     try {
@@ -79,6 +93,8 @@ class CalendarViewModel extends ChangeNotifier {
           _appointments = result.value;
           break;
         case Error<List<UniAppointment>>():
+          _error = result.error.toString();
+          break;
       }
       return result;
     } finally {
