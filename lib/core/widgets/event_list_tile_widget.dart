@@ -104,7 +104,7 @@ class EventListTileWidget extends StatelessWidget {
                           Icon(Icons.location_on, color: Colors.white),
                           SizedBox(width: TAppSpacing.xs),
                           Text(
-                            app.location ?? "N/A",
+                            app.appointmentLocation ?? "N/A",
                             style: Theme.of(context).textTheme.bodySmall!
                                 .copyWith(color: Colors.white),
                           ),
