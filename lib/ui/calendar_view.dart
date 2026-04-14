@@ -1,6 +1,20 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:unitime/core/constants/app_spacing.dart';
+import 'package:unitime/core/constants/colors.dart';
+import 'package:unitime/core/constants/uni_appointment_type.dart';
+import 'package:unitime/core/constants/user_role.dart';
+import 'package:unitime/core/dialogs/add_uni_appointment_dialog.dart';
+import 'package:unitime/data/uni_appointment.dart';
 import 'package:unitime/data/uni_appointment_data_source.dart';
+import 'package:unitime/data/user.dart';
+import 'package:unitime/providers/session_provider.dart';
+import 'package:unitime/repository/uni_appointment_repository.dart';
+import 'package:unitime/viewmodels/add_uni_appointment_view_model.dart';
 import 'package:unitime/viewmodels/calendar_view_model.dart';
 
 // TODOS :
@@ -22,120 +36,523 @@ class MyCalendarView extends StatefulWidget {
 }
 
 class _MyCalendarViewState extends State<MyCalendarView> {
+  final List<CalendarView> _options = [
+    CalendarView.day,
+    CalendarView.week,
+    CalendarView.month,
+  ];
+
+  late final ValueNotifier<int> _viewIndex;
+  late final ValueNotifier<DateTime> _currDate;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     widget.viewModel.loadAppointments.execute();
+    widget.viewModel.loadAppointments.addListener(_handleAppointmentFetchError);
+    _viewIndex = ValueNotifier<int>(1);
+    _currDate = ValueNotifier<DateTime>(DateTime.now());
+  }
+
+  @override
+  void dispose() {
+    widget.viewModel.loadAppointments.removeListener(
+      _handleAppointmentFetchError,
+    );
+    _viewIndex.dispose();
+    _currDate.dispose();
+    super.dispose();
+  }
+
+  void _handleAppointmentFetchError() {
+    if (widget.viewModel.loadAppointments.completed) {
+      ThemeData theme = Theme.of(context);
+      if (widget.viewModel.loadAppointments.error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "An error occurred when fetching appointments. Please try again later.",
+              style: theme.textTheme.bodyMedium!.copyWith(
+                color: theme.colorScheme.onError,
+              ),
+            ),
+            backgroundColor: theme.colorScheme.error,
+          ),
+        );
+        widget.viewModel.loadAppointments.clear();
+      }
+    }
+  }
+
+  Future<DateTime?> _openCustomDatePicker() async {
+    // TODO : Run this on a differenct  Isolate  to offload the main thread
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: widget.viewModel.controller.displayDate ?? DateTime.now(),
+      firstDate: DateTime(DateTime.now().year),
+      lastDate: DateTime(DateTime.now().year + 1),
+
+      builder: (context, child) {
+        return Theme(data: Theme.of(context), child: child!);
+      },
+    );
+    return pickedDate;
   }
 
   @override
   Widget build(BuildContext context) {
+    User currentUser = context.read<SessionProvider>().currentUser!;
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        titleSpacing: 0,
+        title: TextButton.icon(
+          onPressed: () async {
+            final pickedDate = await _openCustomDatePicker();
+            if (pickedDate != null) {
+              widget.viewModel.controller.displayDate = pickedDate;
+              widget.viewModel.controller.selectedDate = pickedDate;
+              _currDate.value = pickedDate;
+            }
+          },
+          label: ValueListenableBuilder(
+            valueListenable: _currDate,
+            builder: (context, value, child) {
+              return Text(
+                "${CalendarViewModel.monthDayRangeFormat.format(value)} ",
+
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              );
+            },
+          ),
+          iconAlignment: IconAlignment.end,
+          icon: RotatedBox(quarterTurns: 1, child: Icon(Icons.chevron_right)),
+        ),
+        actions: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                onPressed: () {
+                  widget.viewModel.controller.displayDate = DateTime.now();
+                },
+                tooltip: "Today",
+                icon: Icon(Icons.today_rounded),
+              ),
+              Container(
+                margin: EdgeInsets.only(right: 10),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ValueListenableBuilder(
+                  valueListenable: _viewIndex,
+                  builder: (context, value, child) {
+                    ThemeData theme = Theme.of(context);
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: List.generate(_options.length, (index) {
+                        return GestureDetector(
+                          onTap: () {
+                            _viewIndex.value = index;
+                            widget.viewModel.controller.view = _options[index];
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeIn,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _viewIndex.value == index
+                                  ? theme.colorScheme.secondaryContainer
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: _viewIndex.value == index
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withAlpha(13),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : [],
+                            ),
+                            child: Text(
+                              _options[index].name,
+                              style: TextStyle(
+                                color: _viewIndex.value == index
+                                    ? theme
+                                          .colorScheme
+                                          .onSecondary // Dark blue text
+                                    : Colors.grey, // Greyish text
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      floatingActionButton:
+          // only a standard user can't create appointments.
+          (currentUser.roles.contains(UserRole.GROUP_ADMIN) ||
+              currentUser.roles.contains(UserRole.PROMOTION_ADMIN) ||
+              currentUser.roles.contains(UserRole.SUPER_ADMIN))
+          ? IconButton(
+              color: Theme.of(context).colorScheme.onPrimary,
+              style: IconButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+              ),
+
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return AddUniAppointmentDialog(
+                        viewModel: AddUniAppointmentViewModel(
+                          appointmentRepository: UniAppointmentRepository(),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+              icon: Icon(Icons.add),
+            )
+          : const SizedBox.shrink(),
       body: SafeArea(
         child: ListenableBuilder(
           listenable: widget.viewModel.loadAppointments,
           builder: (context, _) {
             if (widget.viewModel.loadAppointments.running) {
-              return const Center(child: CircularProgressIndicator());
+              return AlertDialog.adaptive(
+                insetPadding: EdgeInsets.symmetric(horizontal: 16),
+                contentPadding: EdgeInsets.zero,
+                backgroundColor: Colors.transparent,
+                elevation: 5,
+                content: Center(child: CircularProgressIndicator.adaptive()),
+              );
             }
-            return SfCalendar(
-              controller: widget.viewModel.controller,
-              view: CalendarView.month,
-              headerDateFormat: "EEE",
-              initialDisplayDate: DateTime.now(),
-              initialSelectedDate: DateTime.now(),
-              allowViewNavigation: true,
-              viewNavigationMode: ViewNavigationMode.snap,
-              onViewChanged: (details) {
-                widget.viewModel.visibleDates = details.visibleDates;
-                widget.viewModel.updateIcon();
-                widget.viewModel.changeTitleDisplayDate(details);
-              },
-              monthViewSettings: const MonthViewSettings(
-                dayFormat: "EEE",
-                appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
-                appointmentDisplayCount: 3,
-                agendaViewHeight: 150,
+            return ScrollConfiguration(
+              behavior: ScrollConfiguration.of(
+                context,
+              ).copyWith(overscroll: false),
+              child: SfCalendar(
+                controller: widget.viewModel.controller,
+                view: widget.viewModel.controller.view!,
 
-                // this is very important to display details in agenda
-                // this is possible by setting agendaItemHeight> 50
-                // 50 being the  threshold that I set for appointment builder
-                agendaItemHeight: 60,
-                showAgenda: false,
+                headerDateFormat: "EEE",
+                initialDisplayDate:
+                    widget.viewModel.controller.displayDate ?? DateTime.now(),
+                initialSelectedDate:
+                    widget.viewModel.controller.selectedDate ?? DateTime.now(),
+                backgroundColor: Theme.of(context).colorScheme.surface,
+
+                onViewChanged: (details) {
+                  widget.viewModel.visibleDates = details.visibleDates;
+                  widget.viewModel.updateIcon();
+                  widget.viewModel.changeTitleDisplayDate(details);
+                },
+
+                dataSource: UniAppointmentDataSource(
+                  widget.viewModel.appointments,
+                ),
+
+                timeSlotViewSettings: const TimeSlotViewSettings(
+                  startHour: 6,
+                  endHour: 23,
+                  timeIntervalHeight: 100,
+                  timeFormat: "HH:mm",
+                ),
+
+                selectionDecoration: BoxDecoration(),
+
+                appointmentBuilder: (context, CalendarAppointmentDetails details) {
+                  final UniAppointment appointment = details.appointments.first;
+                  final String location = appointment.appointmentLocation;
+                  final UniAppointmentType appointmentType =
+                      appointment.uniAppointmentType;
+                  final DateFormat timeFormat = CalendarViewModel.timeFormat;
+                  return GestureDetector(
+                    onLongPress: () {
+                      showDialog(
+                        barrierColor: Colors.grey.withAlpha(3),
+                        useSafeArea: true,
+                        context: context,
+                        builder: (context) {
+                          ThemeData theme = Theme.of(context);
+                          return BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                            child: AlertDialog(
+                              insetPadding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              contentPadding: EdgeInsets.zero,
+                              backgroundColor: Colors.transparent,
+                              elevation: 5,
+                              content: Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 16,
+                                  horizontal: 10,
+                                ),
+
+                                margin: EdgeInsets.zero,
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    left: BorderSide(
+                                      color:
+                                          appointementColor[appointmentType]!,
+                                      width: 8,
+                                    ),
+                                  ),
+                                  borderRadius: const BorderRadius.only(
+                                    topRight: Radius.circular(12),
+                                    bottomRight: Radius.circular(12),
+                                  ),
+                                  color: widget.viewModel
+                                      .appointmentBackgroundWidgetColor(
+                                        appointmentType,
+                                      ),
+
+                                  boxShadow: [BoxShadow(color: Colors.black)],
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      appointment.title,
+
+                                      style: theme.textTheme.headlineMedium!
+                                          .copyWith(
+                                            color:
+                                                appointementColor[appointmentType],
+                                          ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 3,
+                                    ),
+                                    const SizedBox(height: TAppSpacing.lg),
+
+                                    Row(
+                                      children: [
+                                        Text(
+                                          " Location : ",
+                                          style: theme.textTheme.bodyLarge!
+                                              .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    appointementColor[appointmentType],
+                                              ),
+                                        ),
+                                        Text(
+                                          appointment.appointmentLocation,
+                                          style: theme.textTheme.bodyLarge!
+                                              .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    appointementColor[appointmentType],
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: TAppSpacing.lg),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          " starts at : ",
+                                          style: theme.textTheme.bodyLarge!
+                                              .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    appointementColor[appointmentType],
+                                              ),
+                                        ),
+                                        Text(
+                                          timeFormat.format(appointment.start),
+                                          style: theme.textTheme.bodyLarge!
+                                              .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    appointementColor[appointmentType],
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: TAppSpacing.lg),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          " ends at : ",
+                                          style: theme.textTheme.bodyLarge!
+                                              .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    appointementColor[appointmentType],
+                                              ),
+                                        ),
+                                        Text(
+                                          timeFormat.format(appointment.end),
+                                          style: theme.textTheme.bodyLarge!
+                                              .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    appointementColor[appointmentType],
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 4),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          left: BorderSide(
+                            color: appointementColor[appointmentType]!,
+                            width: 5,
+                          ),
+                        ),
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(12),
+                          bottomRight: Radius.circular(12),
+                        ),
+                        color: widget.viewModel
+                            .appointmentBackgroundWidgetColor(appointmentType),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+
+                        children: [
+                          SizedBox(
+                            width: details.bounds.width,
+                            child: Text(
+                              appointment.title,
+                              textAlign: TextAlign.start,
+                              style: Theme.of(context).textTheme.bodyMedium!
+                                  .copyWith(
+                                    color:
+                                        appointementColor[appointment
+                                            .uniAppointmentType],
+                                    overflow: TextOverflow.fade,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                              softWrap: true,
+                              maxLines: 3,
+                            ),
+                          ),
+                          if (widget.viewModel.controller.view ==
+                                  CalendarView.month &&
+                              details.bounds.height > 50) ...[
+                            SizedBox(
+                              width: details.bounds.width,
+
+                              child: Text(
+                                location,
+                                style: Theme.of(context).textTheme.bodyMedium!
+                                    .copyWith(
+                                      color:
+                                          appointementColor[appointment
+                                              .uniAppointmentType],
+                                      overflow: TextOverflow.fade,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                softWrap: true,
+                                maxLines: 2,
+                              ),
+                            ),
+                            SizedBox(
+                              width: details.bounds.width,
+
+                              child: Text(
+                                "${timeFormat.format(appointment.start)} - ${timeFormat.format(appointment.end)}",
+                                style: Theme.of(context).textTheme.bodySmall!
+                                    .copyWith(
+                                      color:
+                                          appointementColor[appointment
+                                              .uniAppointmentType],
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                softWrap: true,
+                              ),
+                            ),
+                          ],
+                          if (widget.viewModel.controller.view ==
+                                  CalendarView.day ||
+                              widget.viewModel.controller.view ==
+                                  CalendarView.workWeek ||
+                              widget.viewModel.controller.view ==
+                                  CalendarView.schedule) ...[
+                            SizedBox(
+                              width: details.bounds.width,
+
+                              child: Text(
+                                location,
+                                style: Theme.of(context).textTheme.bodyMedium!
+                                    .copyWith(
+                                      color:
+                                          appointementColor[appointment
+                                              .uniAppointmentType],
+                                      overflow: TextOverflow.fade,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                maxLines: 2,
+                                softWrap: true,
+                              ),
+                            ),
+                            SizedBox(
+                              width: details.bounds.width,
+
+                              child: Text(
+                                "${timeFormat.format(appointment.start)} - ${timeFormat.format(appointment.end)}",
+                                style: Theme.of(context).textTheme.bodyMedium!
+                                    .copyWith(
+                                      color:
+                                          appointementColor[appointment
+                                              .uniAppointmentType],
+                                      overflow: TextOverflow.fade,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                softWrap: true,
+                                maxLines: 2,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                allowedViews: _options,
+                showCurrentTimeIndicator: true,
+                showNavigationArrow: false,
+
+                monthViewSettings: MonthViewSettings(
+                  showTrailingAndLeadingDates: false,
+                  showAgenda: true,
+                ),
+                headerHeight: 0,
               ),
-              dataSource: UniAppointmentDataSource(
-                widget.viewModel.appointments,
-              ),
-              showNavigationArrow: false,
-              timeSlotViewSettings: const TimeSlotViewSettings(
-                startHour: 7,
-                endHour: 20,
-                // nonWorkingDays: [DateTime.friday],
-                timeIntervalHeight: 40,
-              ),
-
-              showCurrentTimeIndicator: true,
-              headerHeight: 0,
-              //appointmentBuilder: _appointmentBuilder,
-              scheduleViewSettings: const ScheduleViewSettings(
-                appointmentItemHeight: 60,
-              ),
-              // monthCellBuilder:
-              //     (BuildContext context, MonthCellDetails details) {
-              //       final appointments = details.appointments
-              //           .cast<Appointment>();
-              //       return RepaintBoundary(
-              //         child: Container(
-              //           decoration: BoxDecoration(
-              //             color: Colors.black87,
-              //             border: Border.all(color: Colors.black),
-              //           ),
-              //           child: Column(
-              //             children: [
-              //               // Date Number
-              //               Text(
-              //                 details.date.day.toString(),
-
-              //                 style: TextStyle(
-              //                   color: Colors.white,
-              //                   fontSize: 11,
-              //                 ),
-              //               ),
-
-              //               ...appointments.take(3).map((appointment) {
-              //                 return Container(
-              //                   margin: const EdgeInsets.symmetric(
-              //                     vertical: 1,
-              //                     horizontal: 2,
-              //                   ),
-              //                   padding: const EdgeInsets.symmetric(
-              //                     vertical: 2,
-              //                     horizontal: 4,
-              //                   ),
-              //                   decoration: BoxDecoration(
-              //                     color: appointment.color,
-              //                     borderRadius: BorderRadius.circular(4),
-              //                   ),
-              //                   width: double.infinity,
-              //                   child: Text(
-              //                     softWrap: false,
-              //                     appointment.subject,
-              //                     style: const TextStyle(
-              //                       color: Colors.white,
-              //                       fontSize: 10,
-
-              //                       overflow: TextOverflow.fade,
-              //                     ),
-              //                   ),
-              //                 );
-              //               }),
-              //             ],
-              //           ),
-              //         ),
-              //       );
-              //     },
             );
           },
         ),
@@ -143,98 +560,3 @@ class _MyCalendarViewState extends State<MyCalendarView> {
     );
   }
 }
-
-// late String _titleDate;
-// List<DateTime> _visibleDates = <DateTime>[];
-
-// //        the app bar
-// AppBar _appBar =    AppBar(
-// title: Text(_titleDate),
-// actions: [
-// IconButton(
-// onPressed: () {
-// _controller.displayDate = DateTime.now();
-// _changeTitleDisplayDate(ViewChangedDetails(_visibleDates));
-// },
-// icon: const Icon(todayIcon),
-// ),
-// PopupMenuButton(
-// icon: Icon(_selectedIcon),
-// onSelected: (CalendarView choice) {
-// _controller.view = choice;
-// },
-// itemBuilder: (context) => const [
-// PopupMenuItem(
-// value: CalendarView.month,
-// child: Row(
-// mainAxisAlignment: MainAxisAlignment.start,
-// children: [Icon(monthIcon), Text("   Month")],
-// ),
-// ),
-// PopupMenuItem(
-// value: CalendarView.workWeek,
-// child: Row(
-// mainAxisAlignment: MainAxisAlignment.start,
-// children: [Icon(weekIcon), Text("   Week")],
-// ),
-// ),
-// PopupMenuItem(
-// value: CalendarView.day,
-// child: Row(
-// mainAxisAlignment: MainAxisAlignment.start,
-// children: [Icon(dayIcon), Text("   Day")],
-// ),
-// ),
-// PopupMenuItem(
-// value: CalendarView.schedule,
-// child: Row(
-// mainAxisAlignment: MainAxisAlignment.start,
-// children: [Icon(scheduleIcon), Text("   Schedule")],
-// ),
-// ),
-// ],
-// ),
-// ],
-// ),
-
-//     the Calendar
-
-//  the floating action button  FloatingActionButton(
-//         onPressed: () async {
-//           /**
-//               TODOS:
-//            * add some spacing for the modal sheet on the top so that it doesn't go
-//            *  all the way to the top.
-//            * change the drag into an arrow
-//            * add a close button
-//            */
-//
-//           final newAppointment = await showModalBottomSheet<UniAppointment>(
-//             context: context,
-//             showDragHandle: true,
-//
-//             isScrollControlled: true,
-//             isDismissible: true,
-//             useSafeArea: true,
-//             shape: const RoundedRectangleBorder(
-//               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-//             ),
-//
-//             builder: (BuildContext context) {
-//               return const SingleChildScrollView(
-//                 child: AddUniAppointmentDialog(),
-//               );
-//             },
-//           );
-//
-//           if (newAppointment != null) {
-//             setState(() {
-//               _appointments.add(newAppointment);
-//               _myDataSource.notifyListeners(CalendarDataSourceAction.add, [
-//                 newAppointment,
-//               ]);
-//             });
-//           }
-//         },
-//         child: const Icon(Icons.add),
-//       ),
