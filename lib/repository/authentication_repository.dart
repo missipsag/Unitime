@@ -1,7 +1,10 @@
+import 'package:unitime/core/constants/env_config.dart';
 import 'package:unitime/core/utils/exceptions.dart';
 import 'package:unitime/core/utils/result.dart';
+import 'package:unitime/data/user.dart';
 import 'package:unitime/service/authentication_service.dart';
 import 'package:unitime/service/storage_service.dart';
+import 'package:unitime/service/user_service.dart';
 
 class AuthenticationRepository {
   static final AuthenticationRepository _shared =
@@ -12,27 +15,33 @@ class AuthenticationRepository {
   factory AuthenticationRepository() => _shared;
   final _storageService = StorageService();
   final _authService = AuthenticationService();
-  static const String _authTokenKey = "jwt_token";
+  final _userService = UserService();
+  static const String _authTokenKey = EnvConfig.authTokenKey;
 
-  Future<Result<void>> login(String username, String password) async {
+  Future<Result<User>> login(String username, String password) async {
     try {
       final token = await _authService.login(username, password);
       switch (token) {
         case Ok<String>():
           {
-            await _storageService.write(_authTokenKey, token.toString());
-            return Result.ok(null);
+            await _storageService.write(_authTokenKey, token.value);
+            final res = await _userService.getUser(token.value);
+            if (res is Ok<User>) {
+              return Result.ok(res.value);
+            } else {
+              return res;
+            }
           }
 
-        default:
-          return token;
+        case Error<String>():
+          return Result.error(token.error);
       }
     } on Exception catch (e) {
       return Result.error(e);
     }
   }
 
-  Future<Result<void>> register(
+  Future<Result<User>> register(
     String username,
     String password,
     String firstName,
@@ -49,14 +58,17 @@ class AuthenticationRepository {
       switch (token) {
         case Ok<String>():
           {
-            await _storageService.write(_authTokenKey, token.toString());
-            return Result.ok(null);
+            await _storageService.write(_authTokenKey, token.value);
+            final res = await _userService.getUser(token.value);
+            if (res is Ok<User>) {
+              return Result.ok(res.value);
+            } else {
+              return res;
+            }
           }
 
-        default:
-          {
-            return token;
-          }
+        case Error<String>():
+          return Result.error(token.error);
       }
     } on Exception catch (e) {
       return Result.error(e);
@@ -66,8 +78,13 @@ class AuthenticationRepository {
   Future<Result<void>> logout() async {
     try {
       final result = await _storageService.delete(_authTokenKey);
-      if (result is Ok) return result;
-      return Result.error(CouldNotLogOutUserAuthException());
+      switch (result) {
+        case Ok<void>():
+          return Result.ok(null);
+
+        case Error<void>():
+          return Result.error(CouldNotLogOutUserAuthException());
+      }
     } on Exception catch (e) {
       return Result.error(e);
     }
