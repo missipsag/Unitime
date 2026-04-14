@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:unitime/data/uni_appointment.dart';
 
@@ -13,16 +11,13 @@ class UniAppointmentDataSource extends CalendarDataSource {
   }
 
   @override
-  DateTime getStartTime(int index) => _getAppointment(index).startTime;
+  DateTime getStartTime(int index) => _getAppointment(index).start;
 
   @override
-  DateTime getEndTime(int index) => _getAppointment(index).endTime;
+  DateTime getEndTime(int index) => _getAppointment(index).end;
 
   @override
-  String getSubject(int index) => _getAppointment(index).subject;
-
-  @override
-  Color getColor(int index) => _getAppointment(index).color;
+  String getSubject(int index) => _getAppointment(index).title;
 
   @override
   bool isAllDay(int index) => false;
