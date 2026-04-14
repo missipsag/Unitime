@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:unitime/core/constants/app_spacing.dart';
+import 'package:unitime/core/utils/theme_provider.dart';
 
 class ThemeSwitcherCard extends StatelessWidget {
   final ThemeMode currentMode;
@@ -25,7 +28,7 @@ class ThemeSwitcherCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.transparent,
+                    color: Theme.of(context).colorScheme.surfaceContainer,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -33,15 +36,14 @@ class ThemeSwitcherCard extends StatelessWidget {
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: TAppSpacing.sm),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Appearance",
-                      style: TextStyle(
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
                       ),
                     ),
                     Text(
@@ -52,12 +54,12 @@ class ThemeSwitcherCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: TAppSpacing.md),
 
             // Buttons
             Container(
               decoration: BoxDecoration(
-                color: Colors.grey[200],
+                color: Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -68,19 +70,37 @@ class ThemeSwitcherCard extends StatelessWidget {
                     context: context,
                     icon: Icons.wb_sunny,
                     isSelected: currentMode == ThemeMode.light,
-                    onTap: () => onModeChanged(ThemeMode.light),
+                    onTap: () {
+                      onModeChanged(ThemeMode.light);
+                      Provider.of<ThemeProvider>(
+                        context,
+                        listen: false,
+                      ).setThemeMode(ThemeMode.light);
+                    },
                   ),
                   _buildModeButton(
                     context: context,
                     icon: Icons.nights_stay,
                     isSelected: currentMode == ThemeMode.dark,
-                    onTap: () => onModeChanged(ThemeMode.dark),
+                    onTap: () {
+                      onModeChanged(ThemeMode.dark);
+                      Provider.of<ThemeProvider>(
+                        context,
+                        listen: false,
+                      ).setThemeMode(ThemeMode.dark);
+                    },
                   ),
                   _buildModeButton(
                     context: context,
                     icon: Icons.settings,
                     isSelected: currentMode == ThemeMode.system,
-                    onTap: () => onModeChanged(ThemeMode.system),
+                    onTap: () {
+                      onModeChanged(ThemeMode.system);
+                      Provider.of<ThemeProvider>(
+                        context,
+                        listen: false,
+                      ).setThemeMode(ThemeMode.system);
+                    },
                   ),
                 ],
               ),
