@@ -14,14 +14,17 @@ class UserProfileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 125, vertical: 30),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
             Theme.of(context).colorScheme.primary,
-            Colors.black54,
             Theme.of(context).colorScheme.surface,
+            Colors.black54,
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -43,6 +46,7 @@ class UserProfileWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Avatar + Edit Button
           Stack(
