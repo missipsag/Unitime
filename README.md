@@ -24,35 +24,59 @@ open Unitime_screen_recording.mp4
 
 ## Screenshots
 
-**Registration Page**
-![Registration](screenshots/register_page_dark_mode.png)
+<div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
 
-**Home Page**
-![Home](screenshots/home_page_empty_state.png)
+<div style="text-align: center;">
+  <h4>Registration Page</h4>
+  <img src="screenshots/register_page_dark_mode.png" width="280" alt="Registration">
+</div>
 
-**Notifications**
-![Notifications](screenshots/notifications_page_dark_mode.png)
+<div style="text-align: center;">
+  <h4>Home Page</h4>
+  <img src="screenshots/home_page_empty_state.png" width="280" alt="Home">
+</div>
 
-**Calendar View**
-![Calendar](screenshots/calendar_page_no_events.png)
+<div style="text-align: center;">
+  <h4>Notifications</h4>
+  <img src="screenshots/notifications_page_dark_mode.png" width="280" alt="Notifications">
+</div>
 
-**Join Promotion**
-![Join Promotion](screenshots/join_promotion_page_dark_mode.png)
+<div style="text-align: center;">
+  <h4>Calendar View</h4>
+  <img src="screenshots/calendar_page_no_events.png" width="280" alt="Calendar">
+</div>
 
-**Create Group**
-![Create Group](screenshots/create_group_page_dark_mode.png)
+<div style="text-align: center;">
+  <h4>Join Promotion</h4>
+  <img src="screenshots/join_promotion_page_dark_mode.png" width="280" alt="Join Promotion">
+</div>
 
-**Create Promotion**
-![Create Promotion](screenshots/create_promotion_page_dark_mode.png)
+<div style="text-align: center;">
+  <h4>Create Group</h4>
+  <img src="screenshots/create_group_page_dark_mode.png" width="280" alt="Create Group">
+</div>
 
-**Profile Page**
-![Profile](screenshots/profile_page_dark_mode.png)
+<div style="text-align: center;">
+  <h4>Create Promotion</h4>
+  <img src="screenshots/create_promotion_page_dark_mode.png" width="280" alt="Create Promotion">
+</div>
 
-**Date Picker Dialog**
-![Date Picker](screenshots/go_to_selected_date_dialog.png)
+<div style="text-align: center;">
+  <h4>Profile Page</h4>
+  <img src="screenshots/profile_page_dark_mode.png" width="280" alt="Profile">
+</div>
 
-**Error State**
-![Error State](screenshots/error_joining_group_page_dark_mode.png)
+<div style="text-align: center;">
+  <h4>Date Picker Dialog</h4>
+  <img src="screenshots/go_to_selected_date_dialog.png" width="280" alt="Date Picker">
+</div>
+
+<div style="text-align: center;">
+  <h4>Error State</h4>
+  <img src="screenshots/error_joining_group_page_dark_mode.png" width="280" alt="Error State">
+</div>
+
+</div>
 
 ## Project Overview
 
