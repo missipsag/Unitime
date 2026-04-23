@@ -22,6 +22,38 @@ xdg-open Unitime_screen_recording.mp4
 open Unitime_screen_recording.mp4
 ```
 
+## Screenshots
+
+**Registration Page**
+![Registration](screenshots/register_page_dark_mode.png)
+
+**Home Page**
+![Home](screenshots/home_page_empty_state.png)
+
+**Notifications**
+![Notifications](screenshots/notifications_page_dark_mode.png)
+
+**Calendar View**
+![Calendar](screenshots/calendar_page_no_events.png)
+
+**Join Promotion**
+![Join Promotion](screenshots/join_promotion_page_dark_mode.png)
+
+**Create Group**
+![Create Group](screenshots/create_group_page_dark_mode.png)
+
+**Create Promotion**
+![Create Promotion](screenshots/create_promotion_page_dark_mode.png)
+
+**Profile Page**
+![Profile](screenshots/profile_page_dark_mode.png)
+
+**Date Picker Dialog**
+![Date Picker](screenshots/go_to_selected_date_dialog.png)
+
+**Error State**
+![Error State](screenshots/error_joining_group_page_dark_mode.png)
+
 ## Project Overview
 
 This application demonstrates production-ready software architecture and advanced Flutter development practices. The project implements a scalable MVVM architecture with clear separation of concerns, custom design patterns, and secure authentication mechanisms.
