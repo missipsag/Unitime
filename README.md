@@ -24,41 +24,86 @@ open Unitime_screen_recording.mp4
 
 ## Screenshots
 
-<div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+## Screenshots
+
+<div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: center;">
+
+<div style="text-align: center;">
+  <h4>Login Page</h4>
+  <img src="screenshots/login_page_light_mode.png" width="280" alt="Login">
+</div>
 
 <div style="text-align: center;">
   <h4>Registration Page</h4>
-  <img src="screenshots/register_page_dark_mode.png" width="280" alt="Registration">
+  <div style="display: flex; gap: 10px; justify-content: center;">
+    <img src="screenshots/register_page_light_mode.png" width="280" alt="Registration Light">
+    <img src="screenshots/register_page_dark_mode.png" width="280" alt="Registration Dark">
+  </div>
 </div>
 
 <div style="text-align: center;">
   <h4>Home Page</h4>
-  <img src="screenshots/home_page_empty_state.png" width="280" alt="Home">
+  <div style="display: flex; gap: 10px; justify-content: center;">
+    <img src="screenshots/home_page_empty_state_light_mode.png" width="280" alt="Home Light">
+    <img src="screenshots/home_page_empty_state_dark_mode.png" width="280" alt="Home Dark">
+  </div>
 </div>
 
 <div style="text-align: center;">
   <h4>Notifications</h4>
-  <img src="screenshots/notifications_page_dark_mode.png" width="280" alt="Notifications">
+  <div style="display: flex; gap: 10px; justify-content: center;">
+    <img src="screenshots/notifications_page_light_mode.png" width="280" alt="Notifications Light">
+    <img src="screenshots/notifications_page_dark_mode.png" width="280" alt="Notifications Dark">
+  </div>
+</div>
+
+
+<div style="text-align: center;">
+  <h4>Calendar View (With Appointments)</h4>
+  <div style="display: flex; gap: 10px; justify-content: center;">
+    <img src="screenshots/calendar_with_appointments_light_mode.png" width="280" alt="Calendar Appointments Light">
+    <img src="screenshots/calendar_with_appointments_dark_mode.png" width="280" alt="Calendar Appointments Dark">
+  </div>
 </div>
 
 <div style="text-align: center;">
-  <h4>Calendar View</h4>
-  <img src="screenshots/calendar_page_no_events.png" width="280" alt="Calendar">
+  <h4>Appointment Focus</h4>
+  <div style="display: flex; gap: 10px; justify-content: center;">
+    <img src="screenshots/appointment_focus_light_mode.png" width="280" alt="Appointment Focus Light">
+    <img src="screenshots/appointment_focus_dark_mode.png" width="280" alt="Appointment Focus Dark">
+  </div>
 </div>
 
 <div style="text-align: center;">
   <h4>Join Promotion</h4>
-  <img src="screenshots/join_promotion_page_dark_mode.png" width="280" alt="Join Promotion">
+  <div style="display: flex; gap: 10px; justify-content: center;">
+    <img src="screenshots/join_promotion_light_mode.png" width="280" alt="Join Promotion Light">
+    <img src="screenshots/join_promotion_page_dark_mode.png" width="280" alt="Join Promotion Dark">
+  </div>
+</div>
+
+<div style="text-align: center;">
+  <h4>Join Group</h4>
+  <div style="display: flex; gap: 10px; justify-content: center;">
+    <img src="screenshots/join_group_light_mode.png" width="280" alt="Join Group Light">
+    <img src="screenshots/join_group_dark_mode.png" width="280" alt="Join Group Dark">
+  </div>
 </div>
 
 <div style="text-align: center;">
   <h4>Create Group</h4>
-  <img src="screenshots/create_group_page_dark_mode.png" width="280" alt="Create Group">
+  <div style="display: flex; gap: 10px; justify-content: center;">
+    <img src="screenshots/create_group_light_mode.png" width="280" alt="Create Group Light">
+    <img src="screenshots/create_group_dark_mode.png" width="280" alt="Create Group Dark">
+  </div>
 </div>
 
 <div style="text-align: center;">
   <h4>Create Promotion</h4>
-  <img src="screenshots/create_promotion_page_dark_mode.png" width="280" alt="Create Promotion">
+  <div style="display: flex; gap: 10px; justify-content: center;">
+    <img src="screenshots/create_promotion_page_light_mode.png" width="280" alt="Create Promotion Light">
+    <img src="screenshots/create_promotion_page_dark_mode.png" width="280" alt="Create Promotion Dark">
+  </div>
 </div>
 
 <div style="text-align: center;">
@@ -78,6 +123,7 @@ open Unitime_screen_recording.mp4
 
 </div>
 
+</div>
 ## Project Overview
 
 This application demonstrates production-ready software architecture and advanced Flutter development practices. The project implements a scalable MVVM architecture with clear separation of concerns, custom design patterns, and secure authentication mechanisms.
